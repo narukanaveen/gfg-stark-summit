@@ -47,14 +47,14 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
             <div className="relative w-full aspect-[16/9] mb-8">
               {/* Dimmed background version (optional, keeps the space reserved) */}
               <img 
-                src="/avengers.jpg" 
+                src="/avengers.png" 
                 alt="Avengers Logo Outline" 
                 className="absolute inset-0 w-full h-full object-contain opacity-10 grayscale"
               />
               
               {/* The bright red reveal version */}
               <img 
-                src="/avengers.jpg" 
+                src="/avengers.png" 
                 alt="Avengers Logo Reveal" 
                 className="absolute inset-0 w-full h-full object-contain"
                 style={{
