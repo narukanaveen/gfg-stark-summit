@@ -117,18 +117,29 @@ export default function Hero({ onAssemble }: HeroProps) {
                   </span>
                 </div>
               </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35, duration: 0.7 }}
-                className="font-display text-6xl sm:text-8xl md:text-9xl tracking-wide leading-[0.85] text-glow-red flicker"
-              >
-                STARK DEVELOPER
-                <br />
-                <span className="gradient-text-marvel">SUMMIT</span>
-              </motion.h1>
-
+                <motion.h1
+                  className="font-display text-6xl sm:text-8xl md:text-9xl tracking-wide leading-[0.85] text-transparent bg-clip-text bg-gradient-to-r from-[#ED1D24] to-[#F8E825]"
+                  animate={{
+                    opacity: [1, 1, 0.4, 1, 0.2, 1, 1, 1],
+                    scale: [1, 1, 1.01, 1, 0.99, 1, 1, 1],
+                    filter: [
+                      "drop-shadow(0 0 15px rgba(237,29,36,0.6))",
+                      "drop-shadow(0 0 30px rgba(237,29,36,0.9))",
+                      "drop-shadow(0 0 5px rgba(237,29,36,0.3))",
+                      "drop-shadow(0 0 15px rgba(237,29,36,0.6))"
+                    ]
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    ease: "linear",
+                    repeat: Infinity,
+                    repeatDelay: 1
+                  }}
+                >
+                  STARK DEVELOPER
+                  <br />
+                  SUMMIT
+                </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}

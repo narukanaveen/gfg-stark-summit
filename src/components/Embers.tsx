@@ -1,59 +1,29 @@
-import { useMemo } from 'react';
-import { motion } from 'framer-motion';
-
-interface Ember {
-  id: number;
-  x: number;
-  size: number;
-  delay: number;
-  duration: number;
-  drift: number;
-  color: string;
-}
-
-const EMBER_COLORS = ['#ED1D24', '#FF6B35', '#F8E825', '#FF4438'];
+import { motion } from "framer-motion";
 
 export default function Embers() {
-  const embers = useMemo<Ember[]>(() => {
-    if (typeof window === 'undefined') return [];
-    const vh = window.innerHeight;
-    return Array.from({ length: 32 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      size: Math.random() * 3 + 1,
-      delay: Math.random() * 7,
-      duration: Math.random() * 5 + 5,
-      drift: (Math.random() - 0.5) * 100,
-      color: EMBER_COLORS[Math.floor(Math.random() * EMBER_COLORS.length)],
-      vh,
-    }));
-  }, []);
-
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-[0]">
-      {embers.map((ember) => (
+    /* The "fixed inset-0" here is what makes the flames follow your scroll */
+    <div className="fixed inset-0 w-full h-screen pointer-events-none z-[0] overflow-hidden">
+      {[...Array(35)].map((_, i) => (
         <motion.div
-          key={ember.id}
-          className="absolute rounded-full"
+          key={i}
+          className="absolute bg-gradient-to-t from-[#ED1D24] to-[#F8E825] rounded-full shadow-[0_0_10px_#ED1D24]"
           style={{
-            left: `${ember.x}%`,
-            bottom: '-10px',
-            width: `${ember.size}px`,
-            height: `${ember.size}px`,
-            backgroundColor: ember.color,
-            boxShadow: `0 0 ${ember.size * 3}px ${ember.color}`,
+            width: Math.random() * 4 + 2 + "px",
+            height: Math.random() * 6 + 4 + "px",
+            left: Math.random() * 100 + "%",
           }}
-          animate={{
-            y: [0, -(typeof window !== 'undefined' ? window.innerHeight + 50 : 1000)],
-            x: [0, ember.drift],
-            opacity: [0, 0.85, 0.25, 0],
-            scale: [1, 0.3],
+          initial={{ y: "110vh", opacity: 0 }}
+          animate={{ 
+            y: "-10vh", 
+            opacity: [0, 1, 1, 0],
+            x: Math.random() * 100 - 50 
           }}
           transition={{
-            duration: ember.duration,
-            delay: ember.delay,
+            duration: Math.random() * 5 + 5, 
             repeat: Infinity,
-            ease: 'linear',
+            ease: "linear",
+            delay: Math.random() * 5, 
           }}
         />
       ))}
