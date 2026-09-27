@@ -112,7 +112,6 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    // Subtle 3D tilt (max 6 degrees) without breaking the layout
     const rotX = ((y - centerY) / centerY) * -6;
     const rotY = ((x - centerX) / centerX) * 6;
     setRotateX(rotX);
@@ -131,7 +130,6 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
 
   return (
     <div className="relative pt-16 sm:pt-20 md:pt-24">
-      {/* 3D Perspective Card Wrapper */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -158,75 +156,61 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
         }}
         className={`group relative rounded-sm bg-[#0a0b0e] border border-white/10 ${a.border} ${a.shadow} ${a.bg} transition-colors duration-300 cursor-pointer flex flex-col min-h-[520px] sm:min-h-[540px] md:min-h-[560px] overflow-visible`}
       >
-        {/* Corner HUD markers */}
         <Plus className="absolute top-2 left-2 w-3 h-3 text-white/20 z-20" />
         <Plus className="absolute top-2 right-2 w-3 h-3 text-white/20 z-20" />
         <Plus className="absolute bottom-2 left-2 w-3 h-3 text-white/20 z-20" />
         <Plus className="absolute bottom-2 right-2 w-3 h-3 text-white/20 z-20" />
 
-        {/* Ambient Top Glow Overlay */}
         <div
           className={`absolute inset-0 rounded-sm bg-gradient-to-b ${a.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10`}
         />
 
-        {/* =========================================================================
-            CHARACTER POP-OUT HERO (Absolute positioning & Negative top margin)
-            High Z-index ensures clean overlap over the card top border
-           ========================================================================= */}
+        {/* CHARACTER POP-OUT HERO (Fixed Centering & Sizing) */}
         <div
-          className="absolute -top-16 sm:-top-20 md:-top-24 lg:-top-28 left-1/2 -translate-x-1/2 w-52 sm:w-60 md:w-64 lg:w-72 h-64 sm:h-72 md:h-80 lg:h-92 pointer-events-none z-30 flex items-end justify-center"
+          className="absolute -top-20 md:-top-28 left-1/2 w-[120%] md:w-[140%] h-72 md:h-96 pointer-events-none z-30 flex items-end justify-center"
           style={{
-            transform: 'translateZ(40px)',
+            transform: 'translateX(-50%) translateZ(40px)',
           }}
         >
           <motion.img
             src={track.image}
             alt={track.hero}
             animate={{
-              y: isHovered ? -10 : 0,
-              scale: isHovered ? 1.06 : 1,
+              y: isHovered ? -15 : 0,
+              scale: isHovered ? 1.08 : 1,
             }}
             transition={{
               type: 'spring',
               stiffness: 260,
               damping: 20,
             }}
-            className="w-full h-full object-contain object-bottom filter transition-all duration-300"
+            className="w-full h-full object-contain object-bottom"
             style={{
               filter: `drop-shadow(0 20px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 28px ${track.auraColor})`,
             }}
           />
         </div>
 
-        {/* Top Showcase Canvas Area */}
         <div className="relative h-[240px] sm:h-[260px] flex items-center justify-center overflow-hidden rounded-t-sm z-10">
-          {/* Tactical grid in background */}
           <div className="absolute inset-0 grid-pattern-fine opacity-25" />
-
-          {/* Hero aura rings behind character */}
           <div className={`absolute w-36 h-36 sm:w-44 sm:h-44 rounded-full border ${a.ring} arc-pulse`} />
           <div className={`absolute w-24 h-24 sm:w-32 sm:h-32 rounded-full ${a.blur} blur-2xl`} />
 
-          {/* Tactical Track Badge — Top Left */}
           <div className="absolute top-3 left-3 z-20">
             <span className={`px-2.5 py-1 tactical-xs border ${a.badge} rounded-sm font-semibold tracking-wider`}>
               {track.track}
             </span>
           </div>
 
-          {/* Tactical Coordinate — Top Right */}
           <div className="absolute top-3 right-3 z-20 tactical-xs text-zinc-500 font-mono tracking-widest">
             {track.coord}
           </div>
 
-          {/* Bottom vignette to blend character torso smoothly into card content */}
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/70 to-transparent pointer-events-none z-20" />
         </div>
 
-        {/* Card Content & Directives */}
         <div className="relative p-6 sm:p-7 flex flex-col flex-1 justify-between z-20">
           <div>
-            {/* Identity & Status */}
             <div className="flex items-center gap-2 mb-2">
               <span className={`w-1.5 h-1.5 rounded-full ${a.dot}`} />
               <span className="tactical-xs text-zinc-500 tracking-widest font-mono">
@@ -234,24 +218,20 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
               </span>
             </div>
 
-            {/* Hero Name */}
             <h3 className="font-display text-3xl sm:text-4xl tracking-wide leading-none mb-2 text-zinc-100 group-hover:text-white transition-colors duration-150">
               {track.hero}
             </h3>
 
-            {/* Tagline */}
             <p className={`font-cond font-normal text-sm sm:text-base ${a.text} ${a.glow} mb-3 italic tracking-wide`}>
               "{track.tagline}"
             </p>
 
-            {/* Track Description */}
             <p className="font-cond font-light text-zinc-400 text-sm leading-relaxed mb-5">
               {track.description}
             </p>
           </div>
 
           <div>
-            {/* Tech Stack Directives */}
             <div className="flex flex-wrap gap-1.5 pt-3 border-t border-white/5">
               {track.tech.map((tech) => (
                 <span
@@ -263,7 +243,6 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
               ))}
             </div>
 
-            {/* Corner Action Button */}
             <div
               className={`absolute top-5 right-5 w-8 h-8 rounded-sm border border-white/10 flex items-center justify-center opacity-40 group-hover:opacity-100 ${a.text} group-hover:border-white/25 transition-all duration-200 group-hover:rotate-0 -rotate-45`}
             >
@@ -279,13 +258,11 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
 export default function TheRoster() {
   return (
     <section className="relative py-20 sm:py-28 md:py-36 px-4 sm:px-6 overflow-hidden">
-      {/* Ambient background glows */}
       <div className="absolute top-1/4 left-0 w-[500px] h-[500px] rounded-full bg-red-600/5 blur-[140px] pointer-events-none" />
       <div className="absolute top-1/2 right-0 w-[500px] h-[500px] rounded-full bg-amber-500/5 blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 left-1/3 w-[450px] h-[450px] rounded-full bg-emerald-500/4 blur-[130px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        {/* Section Header */}
         <div className="mb-6 sm:mb-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -321,7 +298,6 @@ export default function TheRoster() {
           </div>
         </div>
 
-        {/* Responsive Grid: single column on mobile with generous gap so pop-outs never collide, 3 columns on tablet/desktop */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-y-24 sm:gap-y-28 md:gap-y-6 md:gap-x-5 lg:gap-x-6">
           {tracks.map((track, i) => (
             <RosterCard key={track.id} track={track} index={i} />
