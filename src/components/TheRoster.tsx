@@ -14,7 +14,6 @@ interface TrackCard {
   tech: string[];
   coord: string;
   auraColor: string;
-  // Custom Image Controls
   imgScale: number;
   imgHoverScale: number;
   imgY: number;
@@ -34,10 +33,11 @@ const tracks: TrackCard[] = [
     tech: ['SOLIDITY', 'FOUNDRY', 'IPFS', 'REACT'],
     coord: 'TRACK-01 / 33.9°N',
     auraColor: 'rgba(237, 29, 36, 0.45)',
-    imgScale: 0.95,
-    imgHoverScale: 1.08,
-    imgY: 0,
-    imgHoverY: -15,
+    // Bigger native scale, pushed slightly down to stay in border, massive pop on hover
+    imgScale: 0.85,
+    imgHoverScale: 1.05,
+    imgY: 15,
+    imgHoverY: -30,
   },
   {
     id: 'ai',
@@ -51,10 +51,10 @@ const tracks: TrackCard[] = [
     tech: ['PYTORCH', 'LANGCHAIN', 'HUGGINGFACE', 'RAG'],
     coord: 'TRACK-02 / 40.7°N',
     auraColor: 'rgba(248, 232, 37, 0.4)',
-    imgScale: 0.95,
-    imgHoverScale: 1.08,
-    imgY: 0,
-    imgHoverY: -15,
+    imgScale: 0.85,
+    imgHoverScale: 1.05,
+    imgY: 15,
+    imgHoverY: -30,
   },
   {
     id: 'app',
@@ -68,11 +68,10 @@ const tracks: TrackCard[] = [
     tech: ['FLUTTER', 'KOTLIN', 'SWIFT', 'FIREBASE'],
     coord: 'TRACK-03 / 28.4°N',
     auraColor: 'rgba(16, 185, 129, 0.45)',
-    // Math normalized to match Iron Man and Dr. Strange exactly
-    imgScale: 0.95,
-    imgHoverScale: 1.08,
-    imgY: 0,
-    imgHoverY: -15,
+    imgScale: 1.40,
+    imgHoverScale: 1.60,
+    imgY: 15,
+    imgHoverY: -30,
   },
 ];
 
