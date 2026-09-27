@@ -26,9 +26,9 @@ export default function Registration() {
   };
 
   return (
-    <footer className="relative pt-24 sm:pt-32 pb-16 px-4 sm:px-6 overflow-hidden bg-[#050608]">
+    <footer className="relative pt-20 sm:pt-32 pb-12 px-3 sm:px-6 overflow-hidden bg-[#050608]">
       {/* Ambient glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-full bg-red-600/10 blur-[120px]" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90vw] h-[250px] rounded-full bg-red-600/10 blur-[100px]" />
 
       <div className="relative max-w-4xl mx-auto text-center">
         <motion.div
@@ -36,11 +36,11 @@ export default function Registration() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
-          className="flex items-center justify-center gap-3 mb-6"
+          className="flex items-center justify-center gap-3 mb-4 sm:mb-6"
         >
-          <div className="h-px w-10 bg-gradient-to-r from-transparent to-red-500" />
+          <div className="h-px w-8 sm:w-10 bg-gradient-to-r from-transparent to-red-500" />
           <span className="tactical-sm text-red-400">04 — VIP ADMISSION PASS</span>
-          <div className="h-px w-10 bg-gradient-to-l from-transparent to-amber-400" />
+          <div className="h-px w-8 sm:w-10 bg-gradient-to-l from-transparent to-amber-400" />
         </motion.div>
 
         <motion.h2
@@ -48,7 +48,7 @@ export default function Registration() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="font-display text-5xl sm:text-7xl md:text-8xl tracking-wide leading-[0.85] mb-5 text-glow-red"
+          className="font-display text-4xl sm:text-7xl md:text-8xl tracking-wide leading-[0.9] mb-4 sm:mb-5 text-glow-red px-2"
         >
           SECURE YOUR
           <br />
@@ -60,42 +60,38 @@ export default function Registration() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-cond font-light text-zinc-400 text-base sm:text-lg max-w-xl mx-auto mb-14"
+          className="font-cond font-light text-zinc-400 text-sm sm:text-lg max-w-xl mx-auto mb-10 sm:mb-14 px-4"
         >
           Claim your official Stark Developer Summit credential ticket. Enter your clearance channel below to generate your pass.
         </motion.p>
 
-        {/* Interactive Marvel Ticket Container with Scoped Apple-grade Font */}
+        {/* Interactive Marvel Ticket Container */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          whileHover={{ y: -6, rotateX: 2, rotateY: -2 }}
-          className="max-w-2xl mx-auto relative group perspective-1000"
+          className="max-w-2xl mx-auto relative group px-2 sm:px-0"
           style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", sans-serif', letterSpacing: '-0.01em' }}
         >
-          {/* Ticket Shadow Glow */}
-          <div className="absolute inset-0 bg-red-600/20 blur-2xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
           {/* Main Red Ticket Body */}
-          <div className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-900 rounded-2xl p-6 sm:p-10 text-white shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-red-500/40 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-900 rounded-2xl p-5 sm:p-10 text-white shadow-[0_15px_40px_rgba(0,0,0,0.8)] border border-red-500/40 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
             
             {/* Background Ticket Watermark Pattern */}
             <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
-              <Ticket className="w-64 h-64 text-white" />
+              <Ticket className="w-48 sm:w-64 h-48 sm:h-64 text-white" />
             </div>
 
-            {/* Left Ticket Section: Header & Inputs */}
+            {/* Left Ticket Section */}
             <div className="flex-1 text-left z-10 w-full">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2.5 py-1 rounded-md bg-black/30 text-[11px] font-medium tracking-widest text-amber-300 uppercase border border-amber-400/30">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="px-2.5 py-0.5 rounded bg-black/30 text-[10px] sm:text-[11px] font-medium tracking-widest text-amber-300 uppercase border border-amber-400/30">
                   STARK SUMMIT '26
                 </span>
-                <span className="text-[11px] font-medium text-red-200 tracking-wider">BENNETT UNIV</span>
+                <span className="text-[10px] sm:text-[11px] font-medium text-red-200 tracking-wider">BENNETT UNIV</span>
               </div>
 
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-5 text-white drop-shadow-md">
+              <h3 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-4 text-white drop-shadow-md">
                 VIP ADMIT ONE
               </h3>
 
@@ -107,10 +103,10 @@ export default function Registration() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onSubmit={handleSubmit}
-                    className="space-y-4"
+                    className="space-y-3 sm:space-y-4"
                   >
                     <div>
-                      <label className="block text-[12px] font-semibold text-red-100 tracking-wide uppercase mb-1.5">
+                      <label className="block text-[11px] sm:text-[12px] font-semibold text-red-100 tracking-wide uppercase mb-1.5">
                         Authorized Email Terminal:
                       </label>
                       <input
@@ -119,8 +115,8 @@ export default function Registration() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="name@domain.com"
-                        className="w-full px-4 py-3.5 rounded-lg bg-white text-zinc-900 text-sm font-medium tracking-normal border-2 border-red-400 placeholder:text-zinc-400 shadow-inner
-                          focus:outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-300/30 transition-all duration-200"
+                        className="w-full px-3.5 py-3 rounded-lg bg-white text-zinc-900 text-xs sm:text-sm font-medium border-2 border-red-400 placeholder:text-zinc-400 shadow-inner
+                          focus:outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-300/30 transition-all"
                       />
                     </div>
 
@@ -129,7 +125,7 @@ export default function Registration() {
                       disabled={status !== 'idle'}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full py-3.5 rounded-lg bg-black text-white font-semibold text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg hover:bg-zinc-900 transition-all cursor-pointer border border-white/10"
+                      className="w-full py-3 rounded-lg bg-black text-white font-semibold text-xs sm:text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg hover:bg-zinc-900 transition-all cursor-pointer border border-white/10"
                     >
                       {status === 'loading' ? (
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -145,21 +141,21 @@ export default function Registration() {
                     key="ticket-success"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="bg-black/40 p-4 rounded-lg border border-emerald-400/40 backdrop-blur-sm"
+                    className="bg-black/40 p-3.5 sm:p-4 rounded-lg border border-emerald-400/40 backdrop-blur-sm"
                   >
                     <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold mb-1">
                       <ShieldCheck className="w-4 h-4" /> PASS GRANTED & LOGGED
                     </div>
-                    <div className="text-xs text-amber-300 font-semibold tracking-wider mb-2">
+                    <div className="text-xs text-amber-300 font-semibold tracking-wider mb-1.5">
                       ID: {badgeId}
                     </div>
-                    <div className="text-xs text-zinc-200 truncate mb-3">
+                    <div className="text-[11px] sm:text-xs text-zinc-200 truncate mb-3">
                       NODE: {email}
                     </div>
                     <button
                       type="button"
                       onClick={resetForm}
-                      className="text-xs text-red-200 hover:text-white underline uppercase font-semibold tracking-wider cursor-pointer"
+                      className="text-[11px] sm:text-xs text-red-200 hover:text-white underline uppercase font-semibold tracking-wider cursor-pointer"
                     >
                       Issue New Pass
                     </button>
@@ -168,26 +164,26 @@ export default function Registration() {
               </AnimatePresence>
             </div>
 
-            {/* Vertical Ticket Perforation Divider */}
+            {/* Vertical Divider */}
             <div className="hidden md:flex flex-col items-center justify-center self-stretch px-2">
               <div className="h-full border-r-2 border-dashed border-red-400/40" />
             </div>
 
             {/* Right Ticket Stub Section */}
-            <div className="z-10 w-full md:w-48 text-center md:text-right flex flex-col justify-between border-t md:border-t-0 pt-4 md:pt-0 border-red-500/30">
+            <div className="z-10 w-full md:w-48 text-center md:text-right flex flex-row md:flex-col justify-between items-center md:items-end border-t md:border-t-0 pt-4 md:pt-0 border-red-500/30">
               <div>
-                <div className="text-[11px] font-bold text-red-200 tracking-widest uppercase">LOCATION</div>
-                <div className="text-xl font-black tracking-tight text-white">BENNETT UNIV</div>
+                <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase">LOCATION</div>
+                <div className="text-base sm:text-xl font-black tracking-tight text-white">BENNETT UNIV</div>
               </div>
 
-              <div className="my-4">
-                <div className="text-[11px] font-bold text-red-200 tracking-widest uppercase">ACCESS DATE</div>
-                <div className="text-sm font-bold tracking-wider text-amber-300">2026.09.27</div>
+              <div className="my-0 md:my-3">
+                <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase">ACCESS DATE</div>
+                <div className="text-xs sm:text-sm font-bold tracking-wider text-amber-300">2026.09.27</div>
               </div>
 
               <div>
-                <div className="text-[11px] font-bold text-red-200 tracking-widest uppercase">SECURITY</div>
-                <div className="text-xs font-bold text-white tracking-widest bg-black/40 py-1 px-2.5 rounded-md inline-block mt-1 border border-white/10">
+                <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase hidden md:block">SECURITY</div>
+                <div className="text-[11px] sm:text-xs font-bold text-white tracking-widest bg-black/40 py-1 px-2 rounded-md inline-block mt-1 border border-white/10">
                   LEVEL 9 VIP
                 </div>
               </div>
@@ -197,10 +193,10 @@ export default function Registration() {
         </motion.div>
 
         {/* Divider */}
-        <div className="mt-20 mb-8 h-px w-full bg-gradient-to-r from-transparent via-white/8 to-transparent" />
+        <div className="mt-16 sm:mt-20 mb-8 h-px w-full bg-gradient-to-r from-transparent via-white/8 to-transparent" />
 
         {/* Footer links */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-left">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-left px-2 sm:px-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-sm bg-gradient-to-br from-red-600 to-amber-400 flex items-center justify-center font-display text-lg text-white tracking-wide">
               S
@@ -231,7 +227,7 @@ export default function Registration() {
         </div>
 
         {/* Tactical footer line */}
-        <div className="mt-8 flex items-center justify-center gap-2 tactical-xs text-zinc-700">
+        <div className="mt-8 flex items-center justify-center gap-2 tactical-xs text-zinc-700 px-2">
           <Plus className="w-3 h-3" />
           © 2026 STARK INDUSTRIES // ALL DIRECTIVES CLASSIFIED
           <Plus className="w-3 h-3" />
