@@ -118,10 +118,7 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
     setRotateY(rotY);
   };
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
+  const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => {
     setIsHovered(false);
     setRotateX(0);
@@ -137,12 +134,7 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        animate={{
-          rotateX,
-          rotateY,
-          y: isHovered ? -8 : 0,
-          scale: isHovered ? 1.02 : 1,
-        }}
+        animate={{ rotateX, rotateY, y: isHovered ? -8 : 0, scale: isHovered ? 1.02 : 1 }}
         transition={{
           default: { duration: 0.6, delay: index * 0.15, ease: [0.16, 1, 0.3, 1] },
           rotateX: { type: 'spring', stiffness: 280, damping: 24, mass: 0.8 },
@@ -150,10 +142,7 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
           y: { type: 'spring', stiffness: 280, damping: 24, mass: 0.8 },
           scale: { type: 'spring', stiffness: 280, damping: 24, mass: 0.8 },
         }}
-        style={{
-          transformStyle: 'preserve-3d',
-          perspective: 1000,
-        }}
+        style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
         className={`group relative rounded-sm bg-[#0a0b0e] border border-white/10 ${a.border} ${a.shadow} ${a.bg} transition-colors duration-300 cursor-pointer flex flex-col min-h-[520px] sm:min-h-[540px] md:min-h-[560px] overflow-visible`}
       >
         <Plus className="absolute top-2 left-2 w-3 h-3 text-white/20 z-20" />
@@ -161,56 +150,47 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
         <Plus className="absolute bottom-2 left-2 w-3 h-3 text-white/20 z-20" />
         <Plus className="absolute bottom-2 right-2 w-3 h-3 text-white/20 z-20" />
 
-        <div
-          className={`absolute inset-0 rounded-sm bg-gradient-to-b ${a.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10`}
-        />
+        <div className={`absolute inset-0 rounded-sm bg-gradient-to-b ${a.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10`} />
 
         {/* =========================================================================
-            CHARACTER POP-OUT HERO (Mathematically aligned to top canvas border)
+            THE SHOWCASE CANVAS (Handles images, rings, and fade-outs all in one)
            ========================================================================= */}
-        <div
-          className="absolute -top-20 left-0 w-full h-[320px] sm:h-[340px] pointer-events-none z-30 flex items-end justify-center px-4 sm:px-6"
-          style={{
-            transform: 'translateZ(40px)',
-          }}
-        >
+        <div className="relative h-[260px] w-full flex items-end justify-center rounded-t-sm z-20" style={{ transform: 'translateZ(40px)' }}>
+          
+          {/* Tactical grid in background (clipped to canvas) */}
+          <div className="absolute inset-0 grid-pattern-fine opacity-25 overflow-hidden rounded-t-sm" />
+          
+          {/* Hero aura rings behind character */}
+          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 rounded-full border ${a.ring} arc-pulse`} />
+          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full ${a.blur} blur-2xl`} />
+
+          {/* THE CHARACTER (Anchored to bottom, scales uniformly) */}
           <motion.img
             src={track.image}
             alt={track.hero}
-            animate={{
-              y: isHovered ? -20 : 0,
-              scale: isHovered ? 1.1 : 1,
-            }}
-            transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 20,
-            }}
-            className="w-full h-full object-contain object-bottom origin-bottom"
-            style={{
-              filter: `drop-shadow(0 15px 25px rgba(0,0,0,0.7)) drop-shadow(0 0 20px ${track.auraColor})`,
-            }}
+            animate={{ y: isHovered ? -15 : 0, scale: isHovered ? 1.08 : 0.95 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="absolute bottom-0 w-[95%] h-[135%] object-contain object-bottom origin-bottom z-30 pointer-events-none"
+            style={{ filter: `drop-shadow(0 -10px 20px ${track.auraColor}) drop-shadow(0 10px 20px rgba(0,0,0,0.8))` }}
           />
-        </div>
 
-        <div className="relative h-[240px] sm:h-[260px] flex items-center justify-center overflow-hidden rounded-t-sm z-10">
-          <div className="absolute inset-0 grid-pattern-fine opacity-25" />
-          <div className={`absolute w-36 h-36 sm:w-44 sm:h-44 rounded-full border ${a.ring} arc-pulse`} />
-          <div className={`absolute w-24 h-24 sm:w-32 sm:h-32 rounded-full ${a.blur} blur-2xl`} />
+          {/* THE VIGNETTE SHADOW (z-40: Forces the chopped-off waistlines to fade smoothly into the black card) */}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/90 to-transparent pointer-events-none z-40" />
 
-          <div className="absolute top-3 left-3 z-20">
+          {/* Tactical Track Badge — Top Left */}
+          <div className="absolute top-4 left-4 z-40">
             <span className={`px-2.5 py-1 tactical-xs border ${a.badge} rounded-sm font-semibold tracking-wider`}>
               {track.track}
             </span>
           </div>
 
-          <div className="absolute top-3 right-3 z-20 tactical-xs text-zinc-500 font-mono tracking-widest">
+          {/* Tactical Coordinate — Top Right */}
+          <div className="absolute top-4 right-4 z-40 tactical-xs text-zinc-500 font-mono tracking-widest">
             {track.coord}
           </div>
-
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/80 to-transparent pointer-events-none z-20" />
         </div>
 
+        {/* Card Content & Directives */}
         <div className="relative p-6 sm:p-7 flex flex-col flex-1 justify-between z-20">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -219,35 +199,25 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
                 HERO_CLASS // {track.heroClass.toUpperCase()}
               </span>
             </div>
-
             <h3 className="font-display text-3xl sm:text-4xl tracking-wide leading-none mb-2 text-zinc-100 group-hover:text-white transition-colors duration-150">
               {track.hero}
             </h3>
-
             <p className={`font-cond font-normal text-sm sm:text-base ${a.text} ${a.glow} mb-3 italic tracking-wide`}>
               "{track.tagline}"
             </p>
-
             <p className="font-cond font-light text-zinc-400 text-sm leading-relaxed mb-5">
               {track.description}
             </p>
           </div>
-
           <div>
             <div className="flex flex-wrap gap-1.5 pt-3 border-t border-white/5">
               {track.tech.map((tech) => (
-                <span
-                  key={tech}
-                  className="px-2 py-0.5 tactical-xs bg-white/5 border border-white/10 text-zinc-400 rounded-sm hover:border-white/20 transition-colors"
-                >
+                <span key={tech} className="px-2 py-0.5 tactical-xs bg-white/5 border border-white/10 text-zinc-400 rounded-sm hover:border-white/20 transition-colors">
                   {tech}
                 </span>
               ))}
             </div>
-
-            <div
-              className={`absolute top-5 right-5 w-8 h-8 rounded-sm border border-white/10 flex items-center justify-center opacity-40 group-hover:opacity-100 ${a.text} group-hover:border-white/25 transition-all duration-200 group-hover:rotate-0 -rotate-45`}
-            >
+            <div className={`absolute top-5 right-5 w-8 h-8 rounded-sm border border-white/10 flex items-center justify-center opacity-40 group-hover:opacity-100 ${a.text} group-hover:border-white/25 transition-all duration-200 group-hover:rotate-0 -rotate-45`}>
               <ArrowUpRight className="w-4 h-4" />
             </div>
           </div>
@@ -266,41 +236,21 @@ export default function TheRoster() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="mb-6 sm:mb-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-3 mb-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-100px' }} transition={{ duration: 0.6 }} className="flex items-center gap-3 mb-4">
             <div className="h-px w-12 bg-gradient-to-r from-amber-400 to-transparent" />
             <span className="tactical-sm text-amber-400">03 — THE ROSTER</span>
           </motion.div>
-
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display text-4xl sm:text-6xl tracking-wide leading-none"
-            >
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-100px' }} transition={{ duration: 0.6, delay: 0.1 }} className="font-display text-4xl sm:text-6xl tracking-wide leading-none">
               CHOOSE YOUR HERO
             </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="font-cond font-light text-zinc-400 text-sm sm:text-base max-w-md"
-            >
+            <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-100px' }} transition={{ duration: 0.6, delay: 0.2 }} className="font-cond font-light text-zinc-400 text-sm sm:text-base max-w-md">
               Three tracks. Three heroes. One mission. Select your directive and assemble your squad for the Stark Developer Summit.
             </motion.p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-24 sm:gap-y-28 md:gap-y-6 md:gap-x-5 lg:gap-x-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-20 sm:gap-y-24 md:gap-y-6 md:gap-x-5 lg:gap-x-6">
           {tracks.map((track, i) => (
             <RosterCard key={track.id} track={track} index={i} />
           ))}
