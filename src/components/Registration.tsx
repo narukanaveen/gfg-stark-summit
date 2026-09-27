@@ -87,8 +87,8 @@ export default function Registration() {
               <Ticket className="w-48 sm:w-64 h-48 sm:h-64 text-white" />
             </div>
 
-            {/* Left Ticket Section */}
-            <div className="flex-1 text-left z-10 w-full">
+            {/* Left Ticket Section with 3D Perspective */}
+            <div className="flex-1 text-left z-10 w-full" style={{ perspective: '1000px' }}>
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className="px-2.5 py-0.5 rounded bg-black/30 text-[10px] sm:text-[11px] font-medium tracking-widest text-amber-300 uppercase border border-amber-400/30">
                   STARK SUMMIT '26
@@ -104,9 +104,10 @@ export default function Registration() {
                 {status !== 'done' ? (
                   <motion.form
                     key="ticket-form"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0, rotateX: 90, scale: 0.95 }}
+                    animate={{ opacity: 1, rotateX: 0, scale: 1 }}
+                    exit={{ opacity: 0, rotateX: -90, scale: 0.95 }}
+                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                     onSubmit={handleSubmit}
                     className="space-y-3 sm:space-y-4"
                   >
@@ -145,9 +146,11 @@ export default function Registration() {
                   /* Success Ticket State */
                   <motion.div
                     key="ticket-success"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-black/40 p-3.5 sm:p-4 rounded-lg border border-emerald-400/40 backdrop-blur-sm"
+                    initial={{ opacity: 0, rotateX: 90, scale: 0.95 }}
+                    animate={{ opacity: 1, rotateX: 0, scale: 1 }}
+                    exit={{ opacity: 0, rotateX: -90, scale: 0.95 }}
+                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                    className="bg-black/40 p-3.5 sm:p-4 rounded-lg border border-emerald-400/40 backdrop-blur-sm shadow-xl"
                   >
                     <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold mb-1">
                       <ShieldCheck className="w-4 h-4" /> PASS GRANTED & LOGGED
