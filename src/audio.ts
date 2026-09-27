@@ -16,7 +16,7 @@ class SoundEffects {
     }
   }
 
-  // Single deep sub-bass heartbeat thump (Lub-dub)
+  // Deep cinematic sub-bass heartbeat thump (Lub-dub)
   playHeartbeat() {
     try {
       this.init();
@@ -29,24 +29,24 @@ class SoundEffects {
         const gain = this.ctx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(65 - index * 12, now + delay);
-        osc.frequency.exponentialRampToValueAtTime(22, now + delay + 0.28);
+        osc.frequency.setValueAtTime(70 - index * 15, now + delay);
+        osc.frequency.exponentialRampToValueAtTime(20, now + delay + 0.3);
 
-        gain.gain.setValueAtTime(0.18, now + delay);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.32);
+        gain.gain.setValueAtTime(0.25, now + delay); // Stronger bass punch
+        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.35);
 
         osc.connect(gain);
         gain.connect(this.ctx.destination);
 
         osc.start(now + delay);
-        osc.stop(now + delay + 0.32);
+        osc.stop(now + delay + 0.35);
       });
     } catch {
       // Audio context restricted
     }
   }
 
-  // Start continuous rhythmic heartbeat loop (synced to visual pulse)
+  // Start continuous rhythmic heartbeat loop matching the visual animation
   startHeartbeatLoop(intervalMs = 3500) {
     if (this.heartbeatInterval) return;
     this.playHeartbeat();
@@ -87,7 +87,7 @@ class SoundEffects {
         filter.frequency.setValueAtTime(300, now);
 
         gain.gain.setValueAtTime(0.001, now);
-        gain.gain.linearRampToValueAtTime(0.025, now + 1.5);
+        gain.gain.linearRampToValueAtTime(0.03, now + 1.5);
         gain.gain.linearRampToValueAtTime(0.001, now + 5.0);
 
         osc.connect(filter);

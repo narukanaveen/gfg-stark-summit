@@ -8,16 +8,18 @@ interface HeroProps {
 }
 
 export default function Hero({ onAssemble }: HeroProps) {
-  // Start the synced heartbeat loop and continuous background theme on mount
   useEffect(() => {
+    // Start continuous loop immediately
+    soundFx.startHeartbeatLoop(3500); 
+    soundFx.startAmbientTheme();
+
     const handleFirstInteraction = () => {
-      soundFx.startHeartbeatLoop(3500); // Thumps every 3.5s matching title pulse
-      soundFx.startAmbientTheme();      // Starts continuous background sci-fi theme pad
+      soundFx.startHeartbeatLoop(3500);
+      soundFx.startAmbientTheme();
       window.removeEventListener('click', handleFirstInteraction);
       window.removeEventListener('keydown', handleFirstInteraction);
     };
 
-    // Browsers require a user interaction to unlock audio context smoothly
     window.addEventListener('click', handleFirstInteraction);
     window.addEventListener('keydown', handleFirstInteraction);
 
@@ -69,7 +71,7 @@ export default function Hero({ onAssemble }: HeroProps) {
             </span>
           </div>
 
-          {/* Title with synchronized pulsing animation */}
+          {/* Title with exact 3.5s synchronized pulse */}
           <motion.h1
             className="font-display text-6xl sm:text-8xl md:text-9xl tracking-wide leading-[0.85] text-transparent bg-clip-text bg-gradient-to-r from-[#ED1D24] to-[#F8E825]"
             animate={{
@@ -83,7 +85,7 @@ export default function Hero({ onAssemble }: HeroProps) {
               ]
             }}
             transition={{
-              duration: 3.5, // Perfectly matched to the 3.5s heartbeat interval loop
+              duration: 3.5,
               ease: "linear",
               repeat: Infinity,
             }}
