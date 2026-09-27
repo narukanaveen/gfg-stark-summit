@@ -14,6 +14,11 @@ interface TrackCard {
   tech: string[];
   coord: string;
   auraColor: string;
+  // Custom Image Controls
+  imgScale: number;
+  imgHoverScale: number;
+  imgY: number;
+  imgHoverY: number;
 }
 
 const tracks: TrackCard[] = [
@@ -29,6 +34,10 @@ const tracks: TrackCard[] = [
     tech: ['SOLIDITY', 'FOUNDRY', 'IPFS', 'REACT'],
     coord: 'TRACK-01 / 33.9°N',
     auraColor: 'rgba(237, 29, 36, 0.45)',
+    imgScale: 0.95,
+    imgHoverScale: 1.08,
+    imgY: 0,
+    imgHoverY: -15,
   },
   {
     id: 'ai',
@@ -42,6 +51,10 @@ const tracks: TrackCard[] = [
     tech: ['PYTORCH', 'LANGCHAIN', 'HUGGINGFACE', 'RAG'],
     coord: 'TRACK-02 / 40.7°N',
     auraColor: 'rgba(248, 232, 37, 0.4)',
+    imgScale: 0.95,
+    imgHoverScale: 1.08,
+    imgY: 0,
+    imgHoverY: -15,
   },
   {
     id: 'app',
@@ -55,6 +68,11 @@ const tracks: TrackCard[] = [
     tech: ['FLUTTER', 'KOTLIN', 'SWIFT', 'FIREBASE'],
     coord: 'TRACK-03 / 28.4°N',
     auraColor: 'rgba(16, 185, 129, 0.45)',
+    // Boosted Spider-Man's size by 40% and pushed him slightly up to match the others
+    imgScale: 1.35,
+    imgHoverScale: 1.50,
+    imgY: -10,
+    imgHoverY: -25,
   },
 ];
 
@@ -152,45 +170,37 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
 
         <div className={`absolute inset-0 rounded-sm bg-gradient-to-b ${a.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10`} />
 
-        {/* =========================================================================
-            THE SHOWCASE CANVAS (Handles images, rings, and fade-outs all in one)
-           ========================================================================= */}
         <div className="relative h-[260px] w-full flex items-end justify-center rounded-t-sm z-20" style={{ transform: 'translateZ(40px)' }}>
-          
-          {/* Tactical grid in background (clipped to canvas) */}
           <div className="absolute inset-0 grid-pattern-fine opacity-25 overflow-hidden rounded-t-sm" />
           
-          {/* Hero aura rings behind character */}
           <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 rounded-full border ${a.ring} arc-pulse`} />
           <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full ${a.blur} blur-2xl`} />
 
-          {/* THE CHARACTER (Anchored to bottom, scales uniformly) */}
+          {/* DYNAMIC CHARACTER SCALING */}
           <motion.img
             src={track.image}
             alt={track.hero}
-            animate={{ y: isHovered ? -15 : 0, scale: isHovered ? 1.08 : 0.95 }}
+            animate={{ 
+              y: isHovered ? track.imgHoverY : track.imgY, 
+              scale: isHovered ? track.imgHoverScale : track.imgScale 
+            }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className="absolute bottom-0 w-[95%] h-[135%] object-contain object-bottom origin-bottom z-30 pointer-events-none"
             style={{ filter: `drop-shadow(0 -10px 20px ${track.auraColor}) drop-shadow(0 10px 20px rgba(0,0,0,0.8))` }}
           />
 
-          {/* THE VIGNETTE SHADOW (z-40: Forces the chopped-off waistlines to fade smoothly into the black card) */}
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/90 to-transparent pointer-events-none z-40" />
 
-          {/* Tactical Track Badge — Top Left */}
           <div className="absolute top-4 left-4 z-40">
             <span className={`px-2.5 py-1 tactical-xs border ${a.badge} rounded-sm font-semibold tracking-wider`}>
               {track.track}
             </span>
           </div>
-
-          {/* Tactical Coordinate — Top Right */}
           <div className="absolute top-4 right-4 z-40 tactical-xs text-zinc-500 font-mono tracking-widest">
             {track.coord}
           </div>
         </div>
 
-        {/* Card Content & Directives */}
         <div className="relative p-6 sm:p-7 flex flex-col flex-1 justify-between z-20">
           <div>
             <div className="flex items-center gap-2 mb-2">
