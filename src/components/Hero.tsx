@@ -1,11 +1,21 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, Plus } from 'lucide-react';
+import { soundFx } from '../audio';
 
 interface HeroProps {
   onAssemble: () => void;
 }
 
 export default function Hero({ onAssemble }: HeroProps) {
+  // Trigger deep cinematic sub-bass heartbeat on boot
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      soundFx.playHeartbeat();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section className="relative h-screen min-h-[700px] w-full overflow-hidden flex items-center justify-center">
       {/* Grid background — faint red */}
@@ -103,13 +113,17 @@ export default function Hero({ onAssemble }: HeroProps) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            onClick={onAssemble}
+            onClick={() => {
+              soundFx.playActivate();
+              onAssemble();
+            }}
+            onMouseEnter={() => soundFx.playHover()}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             className="group relative mt-2 px-8 py-3.5 font-cond font-semibold text-sm uppercase tracking-widest text-white
               bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-sm
               shadow-[0_0_30px_rgba(16,185,129,0.4)]
-              hover:shadow-[0_0_45px_rgba(16,185,129,0.6)] transition-all duration-150 ease-out"
+              hover:shadow-[0_0_45px_rgba(16,185,129,0.6)] transition-all duration-150 ease-out cursor-pointer"
           >
             Assemble Your Team
             <span className="absolute inset-0 rounded-sm bg-emerald-400 opacity-0 group-hover:opacity-25 blur-md transition-opacity duration-150 ease-out" />
