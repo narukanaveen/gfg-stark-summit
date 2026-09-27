@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import Embers from '@/components/Embers';
 import Hero from '@/components/Hero';
 import MissionLog from '@/components/MissionLog';
@@ -12,12 +12,11 @@ import CustomCursor from '@/components/CustomCursor';
    ========================================================================= */
 function BootSequence({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState('loading'); // 'loading' | 'flash'
+  const [phase, setPhase] = useState('loading');
 
   useEffect(() => {
     let count = 0;
     const interval = setInterval(() => {
-      // Slower, more suspenseful loading (adds 1 to 4 percent per tick)
       count += Math.floor(Math.random() * 4) + 1; 
       if (count >= 100) {
         count = 100;
@@ -27,14 +26,13 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
         setTimeout(() => onComplete(), 1200);
       }
       setProgress(count);
-    }, 70); // Slightly slower tick interval
+    }, 70);
 
     return () => clearInterval(interval);
   }, [onComplete]);
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black overflow-hidden cursor-none">
-      
       <AnimatePresence>
         {phase === 'loading' && (
           <motion.div
@@ -42,14 +40,12 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="flex flex-col items-center w-full max-w-2xl px-6 cursor-none"
           >
-            {/* The Logo Reveal */}
             <div className="relative w-full aspect-[16/9] mb-8 cursor-none">
               <img 
                 src="/avengers.png" 
                 alt="Avengers Logo Outline" 
                 className="absolute inset-0 w-full h-full object-contain opacity-10 grayscale"
               />
-              
               <img 
                 src="/avengers.png" 
                 alt="Avengers Logo Reveal" 
@@ -60,8 +56,6 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
                 }}
               />
             </div>
-
-            {/* Initialization Text & Counter */}
             <div className="flex flex-col items-center text-red-500 font-mono tracking-widest text-center cursor-none">
               <motion.div 
                 animate={{ opacity: [1, 0.4, 1] }} 
@@ -78,7 +72,6 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
         )}
       </AnimatePresence>
 
-      {/* The White-Out Flash Bang Transition */}
       <AnimatePresence>
         {phase === 'flash' && (
           <motion.div
@@ -90,7 +83,6 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
           />
         )}
       </AnimatePresence>
-
     </div>
   );
 }
@@ -101,6 +93,14 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
 export default function App() {
   const [isBooted, setIsBooted] = useState(false);
   const registrationRef = useRef<HTMLDivElement>(null);
+  
+  // Hook into the browser's scroll position
+  const { scrollY } = useScroll();
+
+  // Map the scroll position (0 to 3000px) to different Y translation values
+  const topGlowParallax = useTransform(scrollY, [0, 3000], [0, 600]); 
+  const bottomGlowParallax = useTransform(scrollY, [0, 3000], [0, -500]); 
+  const embersParallax = useTransform(scrollY, [0, 3000], [0, 250]);
 
   const scrollToRegistration = () => {
     registrationRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -108,18 +108,10 @@ export default function App() {
 
   return (
     <>
-      {/* 
-        Custom Tactical HUD Cursor - Placed at the highest level 
-        so it overrides the standard cursor across the entire app.
-      */}
       <CustomCursor />
 
       {!isBooted && <BootSequence onComplete={() => setIsBooted(true)} />}
 
-      {/* 
-        Removed the `scale` animation from this wrapper. 
-        Scaling heavy CSS blurs and masks was crushing the GPU and causing the lag.
-      */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: isBooted ? 1 : 0 }}
@@ -134,11 +126,23 @@ export default function App() {
           }} 
         />
         <div className="fixed inset-0 pointer-events-none z-[2] opacity-[0.035] film-grain mix-blend-overlay" />
+        
+        {/* PARALLAX BACKGROUND GLOWS */}
         <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-red-600/4 blur-[150px]" />
-          <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-amber-500/3 blur-[150px]" />
+          <motion.div 
+            style={{ y: topGlowParallax }}
+            className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-red-600/5 blur-[150px]" 
+          />
+          <motion.div 
+            style={{ y: bottomGlowParallax }}
+            className="absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full bg-amber-500/4 blur-[150px]" 
+          />
         </div>
-        <Embers />
+        
+        {/* PARALLAX EMBERS */}
+        <motion.div style={{ y: embersParallax }} className="fixed inset-0 pointer-events-none z-0">
+          <Embers />
+        </motion.div>
 
         <div className="relative z-10">
           <Hero onAssemble={scrollToRegistration} />
