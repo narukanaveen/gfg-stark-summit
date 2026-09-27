@@ -1,32 +1,36 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, Send, Check, Github, Twitter, Instagram, Linkedin, Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, Check, Github, Twitter, Instagram, Linkedin, Plus, Ticket, ShieldCheck } from 'lucide-react';
 
 export default function Registration() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle');
+  const [badgeId, setBadgeId] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || status !== 'idle') return;
     setStatus('loading');
+    
     setTimeout(() => {
+      const randomId = 'STARK-PASS-' + Math.floor(100000 + Math.random() * 900000);
+      setBadgeId(randomId);
       setStatus('done');
-      setEmail('');
-      setTimeout(() => setStatus('idle'), 3500);
-    }, 1200);
+    }, 1400);
+  };
+
+  const resetForm = () => {
+    setStatus('idle');
+    setEmail('');
+    setBadgeId('');
   };
 
   return (
-    <footer className="relative pt-24 sm:pt-32 pb-12 px-4 sm:px-6 overflow-hidden">
-      {/* Ambient glow — red and gold */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-red-600/6 blur-[100px]" />
-      <div className="absolute top-1/2 right-1/4 w-[300px] h-[300px] rounded-full bg-amber-500/4 blur-[100px]" />
+    <footer className="relative pt-24 sm:pt-32 pb-16 px-4 sm:px-6 overflow-hidden bg-[#050608]">
+      {/* Ambient glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-full bg-red-600/10 blur-[120px]" />
 
-      {/* Grid */}
-      <div className="absolute inset-0 grid-pattern radial-fade opacity-40" />
-
-      <div className="relative max-w-3xl mx-auto text-center">
+      <div className="relative max-w-4xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -35,7 +39,7 @@ export default function Registration() {
           className="flex items-center justify-center gap-3 mb-6"
         >
           <div className="h-px w-10 bg-gradient-to-r from-transparent to-red-500" />
-          <span className="tactical-sm text-red-400">04 — REGISTRATION</span>
+          <span className="tactical-sm text-red-400">04 — VIP ADMISSION PASS</span>
           <div className="h-px w-10 bg-gradient-to-l from-transparent to-amber-400" />
         </motion.div>
 
@@ -46,9 +50,9 @@ export default function Registration() {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="font-display text-5xl sm:text-7xl md:text-8xl tracking-wide leading-[0.85] mb-5 text-glow-red"
         >
-          THE INITIATIVE
+          SECURE YOUR
           <br />
-          <span className="gradient-text-marvel">AWAITS.</span>
+          <span className="gradient-text-marvel">ACCESS PASS.</span>
         </motion.h2>
 
         <motion.p
@@ -56,69 +60,145 @@ export default function Registration() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-cond font-light text-zinc-400 text-base sm:text-lg max-w-xl mx-auto mb-10"
+          className="font-cond font-light text-zinc-400 text-base sm:text-lg max-w-xl mx-auto mb-14"
         >
-          Transmit your credentials. Receive summit intel, track assignments, and early-access protocols.
+          Claim your official Stark Developer Summit credential ticket. Enter your clearance channel below to generate your pass.
         </motion.p>
 
-        {/* Email form */}
-        <motion.form
-          initial={{ opacity: 0, y: 20 }}
+        {/* Interactive Marvel Ticket Container with Hover Physics */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          onSubmit={handleSubmit}
-          className="max-w-md mx-auto"
+          transition={{ duration: 0.8, delay: 0.3 }}
+          whileHover={{ y: -6, rotateX: 2, rotateY: -2 }}
+          className="max-w-2xl mx-auto relative group perspective-1000"
         >
-          <div className="flex flex-col sm:flex-row gap-3 items-center">
-            <div className="relative flex-1 w-full">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="ENTER YOUR EMAIL ADDRESS"
-                className="w-full pl-11 pr-4 py-3.5 rounded-sm bg-black/50 border border-white/8 font-mono text-xs tracking-wide text-zinc-200 placeholder:text-zinc-700 uppercase
-                  focus:outline-none focus:border-red-500/40 focus:shadow-[0_0_15px_rgba(237,29,36,0.12)] transition-all duration-150 ease-out"
-              />
-            </div>
-            <motion.button
-              type="submit"
-              disabled={status !== 'idle'}
-              whileHover={{ scale: status === 'idle' ? 1.04 : 1 }}
-              whileTap={{ scale: 0.97 }}
-              className={`relative px-6 py-3.5 rounded-sm font-cond font-semibold text-sm uppercase tracking-widest whitespace-nowrap flex items-center gap-2 transition-all duration-150 ease-out
-                ${status === 'done'
-                  ? 'bg-emerald-500 text-white shadow-[0_0_30px_rgba(16,185,129,0.5)]'
-                  : 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_35px_rgba(16,185,129,0.6)]'
-                }`}
-            >
-              {status === 'loading' && (
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              )}
-              {status === 'done' && <Check className="w-4 h-4" />}
-              {status === 'idle' && <Send className="w-4 h-4" />}
-              {status === 'idle' ? 'Register' : status === 'loading' ? 'Transmitting' : 'Registered'}
-            </motion.button>
-          </div>
-        </motion.form>
+          {/* Ticket Shadow Glow */}
+          <div className="absolute inset-0 bg-red-600/20 blur-2xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        {/* Status message */}
-        {status === 'done' && (
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="tactical-sm text-emerald-400 mt-4 text-glow-emerald"
-          >
-            ✓ CREDENTIALS RECEIVED // WELCOME TO THE INITIATIVE
-          </motion.p>
-        )}
+          {/* Main Red Ticket Body */}
+          <div className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-900 rounded-xl p-6 sm:p-8 text-white shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-red-500/40 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+            
+            {/* Background Ticket Watermark Pattern */}
+            <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+              <Ticket className="w-64 h-64 text-white" />
+            </div>
+
+            {/* Left Ticket Section: Header & Inputs */}
+            <div className="flex-1 text-left z-10 w-full">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-2 py-0.5 rounded bg-black/30 font-mono text-[10px] tracking-widest text-amber-300 uppercase border border-amber-400/30">
+                  STARK SUMMIT '26
+                </span>
+                <span className="font-mono text-[10px] text-red-200 tracking-wider">BENNETT UNIV</span>
+              </div>
+
+              <h3 className="font-display text-3xl sm:text-4xl tracking-wider mb-4 text-white drop-shadow-md">
+                VIP ADMIT ONE
+              </h3>
+
+              <AnimatePresence mode="wait">
+                {status !== 'done' ? (
+                  <motion.form
+                    key="ticket-form"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onSubmit={handleSubmit}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <label className="block font-mono text-[11px] text-red-200 tracking-wider uppercase mb-1.5">
+                        Authorized Email Terminal:
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="NAME@DOMAIN.COM"
+                        className="w-full px-4 py-3 rounded bg-white text-zinc-900 font-mono text-xs sm:text-sm tracking-wider uppercase border-2 border-red-400 placeholder:text-zinc-400
+                          focus:outline-none focus:border-amber-300 focus:shadow-[0_0_15px_rgba(252,211,77,0.5)] transition-all duration-200"
+                      />
+                    </div>
+
+                    <motion.button
+                      type="submit"
+                      disabled={status !== 'idle'}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full py-3.5 rounded bg-black text-white font-cond font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg hover:bg-zinc-900 transition-all cursor-pointer border border-white/10"
+                    >
+                      {status === 'loading' ? (
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4 text-red-400" />
+                      )}
+                      {status === 'loading' ? 'Processing Pass...' : 'Generate Ticket'}
+                    </motion.button>
+                  </motion.form>
+                ) : (
+                  /* Success Ticket State */
+                  <motion.div
+                    key="ticket-success"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-black/40 p-4 rounded border border-emerald-400/40 backdrop-blur-sm"
+                  >
+                    <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs font-bold mb-1">
+                      <ShieldCheck className="w-4 h-4" /> PASS GRANTED & LOGGED
+                    </div>
+                    <div className="font-mono text-xs text-amber-300 tracking-wider mb-2">
+                      ID: {badgeId}
+                    </div>
+                    <div className="font-mono text-[10px] text-zinc-300 truncate mb-3">
+                      NODE: {email}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={resetForm}
+                      className="text-[10px] font-mono text-red-200 hover:text-white underline uppercase tracking-wider"
+                    >
+                      Issue New Pass
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Vertical Ticket Perforation Divider (Desktop) */}
+            <div className="hidden md:flex flex-col items-center justify-center self-stretch px-2">
+              <div className="h-full border-r-2 border-dashed border-red-400/40" />
+            </div>
+
+            {/* Right Ticket Stub Section */}
+            <div className="z-10 w-full md:w-48 text-center md:text-right flex flex-col justify-between border-t md:border-t-0 pt-4 md:pt-0 border-red-500/30">
+              <div>
+                <div className="font-mono text-[10px] text-red-200 tracking-widest uppercase">LOCATION</div>
+                <div className="font-display text-lg tracking-wider text-white">BENNETT UNIV</div>
+              </div>
+
+              <div className="my-4">
+                <div className="font-mono text-[10px] text-red-200 tracking-widest uppercase">ACCESS DATE</div>
+                <div className="font-mono text-sm tracking-wider text-amber-300 font-bold">2026.09.27</div>
+              </div>
+
+              <div>
+                <div className="font-mono text-[10px] text-red-200 tracking-widest uppercase">SECURITY</div>
+                <div className="font-mono text-xs text-white tracking-widest bg-black/40 py-1 px-2 rounded inline-block mt-1">
+                  LEVEL 9 VIP
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </motion.div>
 
         {/* Divider */}
         <div className="mt-20 mb-8 h-px w-full bg-gradient-to-r from-transparent via-white/8 to-transparent" />
 
-        {/* Footer links — asymmetric */}
+        {/* Footer links */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-left">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-sm bg-gradient-to-br from-red-600 to-amber-400 flex items-center justify-center font-display text-lg text-white tracking-wide">
