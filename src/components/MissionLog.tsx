@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState, useRef } from 'react';
+import { motion, useAnimation, useInView } from 'framer-motion';
 import { Target, MapPin, Clock, Trophy, Cpu, Plus } from 'lucide-react';
 
 interface MissionLogProps {
@@ -29,23 +29,77 @@ function useCountdown() {
   return time;
 }
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
+/* =========================================================================
+   3D BOOT PHYSICS
+   ========================================================================= */
+const bootUp3D = {
+  hidden: { opacity: 0, y: 60, rotateX: -20, scale: 0.95 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
+    rotateX: 0,
+    scale: 1,
+    transition: { 
+      delay: i * 0.12, 
+      duration: 0.8, 
+      type: 'spring', 
+      stiffness: 120, 
+      damping: 20 
+    },
   }),
 };
 
 function CornerMarks() {
   return (
     <>
-      <Plus className="absolute top-2 left-2 w-3 h-3 text-white/15" />
-      <Plus className="absolute top-2 right-2 w-3 h-3 text-white/15" />
-      <Plus className="absolute bottom-2 left-2 w-3 h-3 text-white/15" />
-      <Plus className="absolute bottom-2 right-2 w-3 h-3 text-white/15" />
+      <Plus className="absolute top-2 left-2 w-3 h-3 text-white/15 z-20" />
+      <Plus className="absolute top-2 right-2 w-3 h-3 text-white/15 z-20" />
+      <Plus className="absolute bottom-2 left-2 w-3 h-3 text-white/15 z-20" />
+      <Plus className="absolute bottom-2 right-2 w-3 h-3 text-white/15 z-20" />
     </>
+  );
+}
+
+/* =========================================================================
+   JARVIS SPOTLIGHT WRAPPER (Tracks mouse cursor with radial glow)
+   ========================================================================= */
+function BentoCard({ children, className, glowColor, custom }: { children: React.ReactNode, className: string, glowColor: string, custom: number }) {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  return (
+    <motion.div
+      variants={bootUp3D}
+      custom={custom}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-80px' }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group relative overflow-hidden bg-[#0a0b0e] rounded-sm transition-all duration-300 ease-out ${className}`}
+    >
+      {/* Dynamic Cursor Spotlight */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(500px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}, transparent 40%)`,
+        }}
+      />
+      {/* Content strictly held above the spotlight */}
+      <div className="relative z-10 h-full flex flex-col">
+        {children}
+      </div>
+    </motion.div>
   );
 }
 
@@ -54,11 +108,12 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
 
   return (
     <section className="relative py-24 sm:py-32 px-4 sm:px-6">
+      
       {/* Section header */}
       <div className="max-w-6xl mx-auto mb-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
           className="flex items-center gap-3 mb-4"
@@ -77,28 +132,39 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         </motion.h2>
       </div>
 
-      {/* Bento grid — asymmetric */}
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-[minmax(180px,auto)]">
-        {/* Large directive card — spans 2 cols, crimson border */}
-        <motion.div
-          variants={fadeUp}
-          custom={0}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          className="md:col-span-2 bg-[#0a0b0e] border border-red-500/20 rounded-sm p-8 flex flex-col justify-end group relative overflow-hidden hover:border-red-500/50 hover:shadow-[0_0_30px_rgba(237,29,36,0.12)] transition-all duration-150 ease-out"
+      {/* Bento grid — 3D Perspective Enabled */}
+      <div 
+        className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-[minmax(180px,auto)]"
+        style={{ perspective: '1200px' }}
+      >
+        
+        {/* ==================== CARD 1: PRIMARY DIRECTIVE ==================== */}
+        <BentoCard 
+          custom={0} 
+          glowColor="rgba(237, 29, 36, 0.08)"
+          className="md:col-span-2 border border-red-500/20 hover:border-red-500/50 hover:shadow-[0_0_30px_rgba(237,29,36,0.12)] p-8 justify-end"
         >
           <CornerMarks />
-          <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-red-600/8 blur-3xl group-hover:bg-red-600/15 transition-colors duration-150 ease-out" />
+          
+          {/* Scanning Laser Line */}
+          <motion.div 
+            animate={{ top: ['-10%', '110%'] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+            className="absolute left-0 right-0 h-[1px] bg-red-500/30 shadow-[0_0_15px_rgba(237,29,36,0.8)] z-0"
+          />
+
+          <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-red-600/10 blur-3xl group-hover:bg-red-600/20 transition-colors duration-300" />
+          
           <div className="flex items-start justify-between relative mb-6">
             <div className="flex items-center gap-2.5">
-              <Target className="w-4 h-4 text-red-400" />
+              <Target className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform" />
               <span className="tactical-xs text-red-400/70">DIRECTIVE 01 // PRIMARY</span>
             </div>
             <span className="tactical-xs text-zinc-600">REF: SD-2026-001</span>
           </div>
+          
           <div className="relative">
-            <h3 className="font-display text-3xl sm:text-4xl tracking-wide mb-3 leading-none">
+            <h3 className="font-display text-3xl sm:text-4xl tracking-wide mb-3 leading-none group-hover:text-white transition-colors">
               THE HACKATHON DIRECTIVE
             </h3>
             <p className="font-cond font-light text-zinc-400 leading-relaxed text-sm sm:text-base max-w-lg">
@@ -107,27 +173,25 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
             </p>
             <div className="flex flex-wrap gap-1.5 mt-5">
               {['24 HRS', 'TEAM OF 4', '3 TRACKS', '₹50K POOL'].map((tag) => (
-                <span key={tag} className="px-2.5 py-1 tactical-xs bg-white/5 border border-white/8 text-zinc-400 rounded-sm">
+                <span key={tag} className="px-2.5 py-1 tactical-xs bg-black/40 border border-white/8 text-zinc-400 rounded-sm group-hover:border-red-500/30 group-hover:text-red-100 transition-colors">
                   {tag}
                 </span>
               ))}
             </div>
           </div>
-        </motion.div>
+        </BentoCard>
 
-        {/* Countdown timer card — 1 col, 2 rows tall, emerald border (CTA color) */}
-        <motion.div
-          variants={fadeUp}
+        {/* ==================== CARD 2: COUNTDOWN TIMER ==================== */}
+        <BentoCard 
           custom={1}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          className="md:row-span-2 bg-[#0a0b0e] border border-emerald-500/20 rounded-sm p-6 flex flex-col justify-between relative overflow-hidden hover:border-emerald-500/45 hover:shadow-[0_0_30px_rgba(16,185,129,0.12)] transition-all duration-150 ease-out"
+          glowColor="rgba(16, 185, 129, 0.08)"
+          className="md:row-span-2 border border-emerald-500/20 hover:border-emerald-500/45 hover:shadow-[0_0_30px_rgba(16,185,129,0.12)] p-6 justify-between"
         >
           <CornerMarks />
-          <div className="absolute -bottom-20 -left-10 w-48 h-48 rounded-full bg-emerald-500/8 blur-3xl" />
+          <div className="absolute -bottom-20 -left-10 w-48 h-48 rounded-full bg-emerald-500/10 blur-3xl group-hover:bg-emerald-500/20 transition-colors" />
+          
           <div className="flex items-center gap-2.5 relative">
-            <Clock className="w-4 h-4 text-emerald-400" />
+            <Clock className="w-4 h-4 text-emerald-400 group-hover:-rotate-12 transition-transform" />
             <span className="tactical-xs text-emerald-400/70">T-MINUS</span>
           </div>
 
@@ -139,11 +203,24 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
                 { label: 'HRS', value: t.hours },
                 { label: 'MIN', value: t.minutes },
                 { label: 'SEC', value: t.seconds },
-              ].map((unit) => (
-                <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center">
-                  <div className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums">
+              ].map((unit, i) => (
+                <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center group-hover:border-emerald-500/30 transition-colors">
+                  {/* Glitching Numbers */}
+                  <motion.div 
+                    animate={{ 
+                      opacity: [1, 1, 0.4, 1, 0.8, 1, 1],
+                      x: [0, 0, -2, 2, 0, 0, 0]
+                    }}
+                    transition={{ 
+                      duration: 4, 
+                      repeat: Infinity, 
+                      times: [0, 0.9, 0.92, 0.94, 0.96, 0.98, 1],
+                      delay: i * 0.2 // Stagger glitches
+                    }}
+                    className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums"
+                  >
                     {String(unit.value).padStart(2, '0')}
-                  </div>
+                  </motion.div>
                   <div className="tactical-xs text-zinc-600 mt-1">{unit.label}</div>
                 </div>
               ))}
@@ -154,85 +231,77 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 arc-pulse" />
             [ STATUS: ARMED ]
           </div>
-        </motion.div>
+        </BentoCard>
 
-        {/* Date & Location card — 1 col, neutral border */}
-        <motion.div
-          variants={fadeUp}
+        {/* ==================== CARD 3: LOCATION ==================== */}
+        <BentoCard 
           custom={2}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          className="bg-[#0a0b0e] border border-white/10 rounded-sm p-6 group relative overflow-hidden hover:border-red-500/45 hover:shadow-[0_0_30px_rgba(237,29,36,0.12)] transition-all duration-150 ease-out flex flex-col justify-end"
+          glowColor="rgba(237, 29, 36, 0.08)"
+          className="border border-white/10 hover:border-red-500/45 hover:shadow-[0_0_30px_rgba(237,29,36,0.12)] p-6 justify-end"
         >
           <CornerMarks />
           <div className="flex items-center gap-2.5 mb-4">
-            <MapPin className="w-4 h-4 text-red-400" />
+            <MapPin className="w-4 h-4 text-red-400 group-hover:-translate-y-1 transition-transform" />
             <span className="tactical-xs text-red-400/70">COORDINATES</span>
           </div>
-          <h3 className="font-display text-2xl tracking-wide leading-none">BENNETT UNIVERSITY</h3>
+          <h3 className="font-display text-2xl tracking-wide leading-none group-hover:text-white transition-colors">BENNETT UNIVERSITY</h3>
           <p className="font-cond font-light text-zinc-500 text-sm mt-1">Greater Noida, UP — India</p>
           <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
             <div>
               <div className="tactical-xs text-zinc-600">DATE</div>
-              <div className="font-mono text-xs text-zinc-300 mt-0.5">OCT 15–16 / 2026</div>
+              <div className="font-mono text-xs text-zinc-300 mt-0.5 group-hover:text-red-200 transition-colors">OCT 15–16 / 2026</div>
             </div>
             <span className="tactical-xs text-zinc-700">28.4744°N 77.4834°E</span>
           </div>
-        </motion.div>
+        </BentoCard>
 
-        {/* Prize card — 1 col */}
-        <motion.div
-          variants={fadeUp}
+        {/* ==================== CARD 4: REWARDS ==================== */}
+        <BentoCard 
           custom={3}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          className="bg-[#0a0b0e] border border-white/10 rounded-sm p-5 group relative overflow-hidden hover:border-amber-500/45 hover:shadow-[0_0_30px_rgba(248,232,37,0.1)] transition-all duration-150 ease-out flex flex-col"
+          glowColor="rgba(248, 232, 37, 0.08)"
+          className="border border-white/10 hover:border-amber-500/45 hover:shadow-[0_0_30px_rgba(248,232,37,0.1)] p-5 flex-col"
         >
           <CornerMarks />
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2.5">
-              <Trophy className="w-4 h-4 text-amber-400" />
+              <Trophy className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
               <span className="tactical-xs text-amber-400/70">REWARD</span>
             </div>
             <span className="tactical-xs text-zinc-700">R-01</span>
           </div>
-          <h3 className="font-display text-2xl tracking-wide leading-none">₹50,000 POOL</h3>
+          <h3 className="font-display text-2xl tracking-wide leading-none group-hover:text-amber-100 transition-colors">₹50,000 POOL</h3>
           <p className="font-cond font-light text-zinc-500 text-sm mt-1 mb-3">Plus intern referrals & Stark-tier swag.</p>
           <button
             onClick={onAssemble}
-            className="self-start tactical-xs text-red-400 hover:text-red-300 transition-colors duration-150 ease-out"
+            className="self-start mt-auto tactical-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1 group/btn"
           >
-            VIEW ALL REWARDS →
+            VIEW ALL REWARDS <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} className="inline-block">→</motion.span>
           </button>
-        </motion.div>
+        </BentoCard>
 
-        {/* Systems / tech stack bar — spans 2 cols */}
-        <motion.div
-          variants={fadeUp}
+        {/* ==================== CARD 5: TECH STACK ==================== */}
+        <BentoCard 
           custom={4}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          className="md:col-span-2 bg-[#0a0b0e] border border-white/10 rounded-sm p-5 relative overflow-hidden hover:border-white/20 transition-all duration-150 ease-out flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          glowColor="rgba(255, 255, 255, 0.05)"
+          className="md:col-span-2 border border-white/10 hover:border-white/30 p-5 flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         >
           <CornerMarks />
           <div className="flex items-center gap-3">
-            <Cpu className="w-5 h-5 text-zinc-500" />
+            <Cpu className="w-5 h-5 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
             <div>
-              <h3 className="font-cond font-medium text-sm tracking-wide">STARK-GRADE INFRASTRUCTURE</h3>
+              <h3 className="font-cond font-medium text-sm tracking-wide group-hover:text-white transition-colors">STARK-GRADE INFRASTRUCTURE</h3>
               <p className="tactical-xs text-zinc-600 mt-0.5">GEEKSFORGEEKS × BENNETT TECH CHAPTER</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {['REACT', 'SOLIDITY', 'PYTORCH', 'FLUTTER'].map((tech) => (
-              <span key={tech} className="px-2.5 py-1 tactical-xs bg-white/5 border border-white/8 text-zinc-500 rounded-sm">
+              <span key={tech} className="px-2.5 py-1 tactical-xs bg-black/40 border border-white/8 text-zinc-500 rounded-sm group-hover:border-white/20 group-hover:text-zinc-300 transition-colors">
                 {tech}
               </span>
             ))}
           </div>
-        </motion.div>
+        </BentoCard>
+
       </div>
     </section>
   );
