@@ -111,7 +111,7 @@ class SoundEffects {
     }
   }
 
-  // UI hover click
+  // UI Hover - Sleek, subtle high-frequency glass tick (No gamey pitch sweeps)
   playHover() {
     try {
       this.init();
@@ -120,67 +120,88 @@ class SoundEffects {
       const gain = this.ctx.createGain();
 
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(700, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(350, this.ctx.currentTime + 0.03);
+      osc.frequency.setValueAtTime(2000, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.02);
+      
       gain.gain.setValueAtTime(0.015, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.02);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start();
-      osc.stop(this.ctx.currentTime + 0.03);
+      osc.stop(this.ctx.currentTime + 0.02);
     } catch {}
   }
 
-  // UI activate click
+  // UI Activate - Heavy, authoritative mechanical lock-in thud
   playActivate() {
     try {
       this.init();
       if (!this.ctx) return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
 
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(400, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1000, this.ctx.currentTime + 0.12);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.08);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2000, this.ctx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(200, this.ctx.currentTime + 0.08);
+
       gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
 
-      osc.connect(gain);
+      osc.connect(filter);
+      filter.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start();
-      osc.stop(this.ctx.currentTime + 0.12);
+      osc.stop(this.ctx.currentTime + 0.08);
     } catch {}
   }
 
-  // Success chime when ticket is granted
+  // Success Generation - Cinematic Authorization Swell (Dark, serious power-up)
   playSuccess() {
     try {
       this.init();
       if (!this.ctx) return;
 
       const now = this.ctx.currentTime;
-      [523.25, 659.25, 783.99, 1046.50].forEach((freq, index) => {
+      
+      // A-E-A open power chords for a serious, non-childish drone swell
+      const chords = [110.00, 164.81, 220.00]; 
+      
+      chords.forEach((freq, index) => {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now + index * 0.07);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now);
 
-        gain.gain.setValueAtTime(0.03, now + index * 0.07);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.07 + 0.18);
+        // Filter opens up to sound like energy surging, then closes
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(400, now);
+        filter.frequency.exponentialRampToValueAtTime(3000, now + 0.4);
+        filter.frequency.exponentialRampToValueAtTime(100, now + 1.5);
 
-        osc.connect(gain);
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.04, now + 0.1 + (index * 0.05));
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+
+        osc.connect(filter);
+        filter.connect(gain);
         gain.connect(this.ctx.destination);
 
-        osc.start(now + index * 0.07);
-        osc.stop(now + index * 0.07 + 0.18);
+        osc.start(now);
+        osc.stop(now + 1.5);
       });
     } catch {}
   }
 
-  // Crisp digital clock tick for countdown timers
+  // Crisp digital clock tick - Subdued, muted modern UI click
   playTick() {
     try {
       this.init();
@@ -189,22 +210,21 @@ class SoundEffects {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.015);
-
-      gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.015);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+      
+      gain.gain.setValueAtTime(0.015, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.01);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
       osc.start();
-      osc.stop(this.ctx.currentTime + 0.015);
+      osc.stop(this.ctx.currentTime + 0.01);
     } catch {}
   }
 
-  // Directive / Track selection lock-in sound
+  // Directive selection - Deep heavy data process pulse
   playDirectiveSelect() {
     try {
       this.init();
@@ -213,19 +233,24 @@ class SoundEffects {
       const now = this.ctx.currentTime;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
 
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(440, now);
-      osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+      osc.frequency.setValueAtTime(60, now); // Very low rumble
 
-      gain.gain.setValueAtTime(0.03, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(500, now);
+      filter.frequency.exponentialRampToValueAtTime(100, now + 0.1);
 
-      osc.connect(gain);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+      osc.connect(filter);
+      filter.connect(gain);
       gain.connect(this.ctx.destination);
 
       osc.start(now);
-      osc.stop(now + 0.08);
+      osc.stop(now + 0.1);
     } catch {}
   }
 }
