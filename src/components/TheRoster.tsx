@@ -68,11 +68,11 @@ const tracks: TrackCard[] = [
     tech: ['FLUTTER', 'KOTLIN', 'SWIFT', 'FIREBASE'],
     coord: 'TRACK-03 / 28.4°N',
     auraColor: 'rgba(16, 185, 129, 0.45)',
-    // Boosted Spider-Man's size by 40% and pushed him slightly up to match the others
-    imgScale: 1.35,
-    imgHoverScale: 1.50,
-    imgY: -10,
-    imgHoverY: -25,
+    // Math normalized to match Iron Man and Dr. Strange exactly
+    imgScale: 0.95,
+    imgHoverScale: 1.08,
+    imgY: 0,
+    imgHoverY: -15,
   },
 ];
 
