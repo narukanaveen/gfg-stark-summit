@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Github, Twitter, Instagram, Linkedin, Plus, Ticket, ShieldCheck } from 'lucide-react';
+import { soundFx } from '../audio';
 
 export default function Registration() {
   const [email, setEmail] = useState('');
@@ -10,16 +11,20 @@ export default function Registration() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || status !== 'idle') return;
+    
+    soundFx.playActivate();
     setStatus('loading');
     
     setTimeout(() => {
       const randomId = 'STARK-PASS-' + Math.floor(100000 + Math.random() * 900000);
       setBadgeId(randomId);
       setStatus('done');
+      soundFx.playSuccess();
     }, 1400);
   };
 
   const resetForm = () => {
+    soundFx.playHover();
     setStatus('idle');
     setEmail('');
     setBadgeId('');
@@ -123,6 +128,7 @@ export default function Registration() {
                     <motion.button
                       type="submit"
                       disabled={status !== 'idle'}
+                      onMouseEnter={() => soundFx.playHover()}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full py-3 rounded-lg bg-black text-white font-semibold text-xs sm:text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg hover:bg-zinc-900 transition-all cursor-pointer border border-white/10"
@@ -155,6 +161,7 @@ export default function Registration() {
                     <button
                       type="button"
                       onClick={resetForm}
+                      onMouseEnter={() => soundFx.playHover()}
                       className="text-[11px] sm:text-xs text-red-200 hover:text-white underline uppercase font-semibold tracking-wider cursor-pointer"
                     >
                       Issue New Pass
@@ -218,6 +225,7 @@ export default function Registration() {
                 key={label}
                 href="#"
                 aria-label={label}
+                onMouseEnter={() => soundFx.playHover()}
                 className="w-9 h-9 rounded-sm bg-[#0a0b0e] border border-white/10 flex items-center justify-center text-zinc-500 hover:text-red-400 hover:border-red-500/40 hover:shadow-[0_0_20px_rgba(237,29,36,0.1)] transition-all duration-150 ease-out"
               >
                 <Icon className="w-4 h-4" />
