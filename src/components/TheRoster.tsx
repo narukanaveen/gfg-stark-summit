@@ -165,9 +165,11 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
           className={`absolute inset-0 rounded-sm bg-gradient-to-b ${a.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10`}
         />
 
-        {/* CHARACTER POP-OUT HERO (Contained by default, pops on hover) */}
+        {/* =========================================================================
+            CHARACTER POP-OUT HERO (Mathematically aligned to top canvas border)
+           ========================================================================= */}
         <div
-          className="absolute top-2 left-0 w-full h-[260px] sm:h-[280px] pointer-events-none z-30 flex items-end justify-center px-4"
+          className="absolute -top-20 left-0 w-full h-[320px] sm:h-[340px] pointer-events-none z-30 flex items-end justify-center px-4 sm:px-6"
           style={{
             transform: 'translateZ(40px)',
           }}
@@ -176,8 +178,8 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
             src={track.image}
             alt={track.hero}
             animate={{
-              y: isHovered ? -35 : 10,
-              scale: isHovered ? 1.15 : 0.85,
+              y: isHovered ? -20 : 0,
+              scale: isHovered ? 1.1 : 1,
             }}
             transition={{
               type: 'spring',
@@ -206,7 +208,7 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
             {track.coord}
           </div>
 
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/70 to-transparent pointer-events-none z-20" />
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/80 to-transparent pointer-events-none z-20" />
         </div>
 
         <div className="relative p-6 sm:p-7 flex flex-col flex-1 justify-between z-20">
