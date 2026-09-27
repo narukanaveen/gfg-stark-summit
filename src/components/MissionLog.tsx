@@ -9,13 +9,11 @@ interface MissionLogProps {
 
 const TARGET_DATE = new Date('2026-10-15T09:00:00').getTime();
 
-export default function MissionLog({ onAssemble }: MissionLogProps) {
+// Isolated Countdown Component so only this component re-renders every second (stops parent re-animations)
+function CountdownCard() {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  
-  // Reference for the countdown card
-  const countdownRef = useRef<HTMLDivElement>(null);
-  const isCountdownInView = useInView(countdownRef, { once: true, margin: '-50px' });
-  const isSectionInView = useInView(countdownRef, { margin: '-50px' });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(cardRef, { once: true, margin: '-50px' });
 
   useEffect(() => {
     const tick = () => {
@@ -27,8 +25,7 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         seconds: Math.floor((diff % 60000) / 1000),
       });
 
-      // Play tick sound only when the countdown is in view
-      if (isSectionInView) {
+      if (isInView) {
         soundFx.playTick();
       }
     };
@@ -36,23 +33,58 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [isSectionInView]);
+  }, [isInView]);
 
-  const bootUp3D = {
-    hidden: { opacity: 0, y: 40, scale: 0.98 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { 
-        delay: i * 0.08, 
-        duration: 0.6, 
-        ease: [0.16, 1, 0.3, 1]
-      },
-    }),
-  };
+  return (
+    <div ref={cardRef} className="h-full flex flex-col justify-between">
+      <div className="flex items-center gap-2.5 relative">
+        <Clock className="w-4 h-4 text-emerald-400 group-hover:-rotate-12 transition-transform" />
+        <span className="tactical-xs text-emerald-400/70">T-MINUS</span>
+      </div>
 
-  const CornerMarks = () => (
+      <div className="relative mt-4 flex-1 flex flex-col justify-center">
+        <p className="tactical-xs text-zinc-600 mb-4">COUNTDOWN TO LAUNCH</p>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { label: 'DAYS', value: time.days },
+            { label: 'HRS', value: time.hours },
+            { label: 'MIN', value: time.minutes },
+            { label: 'SEC', value: time.seconds },
+          ].map((unit) => (
+            <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center group-hover:border-emerald-500/30 transition-colors">
+              <div className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums">
+                {String(unit.value).padStart(2, '0')}
+              </div>
+              <div className="tactical-xs text-zinc-600 mt-1">{unit.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative mt-4 flex items-center gap-2 tactical-xs text-emerald-400/60">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 arc-pulse" />
+        [ STATUS: ARMED ]
+      </div>
+    </div>
+  );
+}
+
+const bootUp3D = {
+  hidden: { opacity: 0, y: 30, scale: 0.98 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { 
+      delay: i * 0.08, 
+      duration: 0.5, 
+      ease: [0.16, 1, 0.3, 1]
+    },
+  }),
+};
+
+function CornerMarks() {
+  return (
     <>
       <Plus className="absolute top-2 left-2 w-3 h-3 text-white/15 z-20" />
       <Plus className="absolute top-2 right-2 w-3 h-3 text-white/15 z-20" />
@@ -60,49 +92,50 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
       <Plus className="absolute bottom-2 right-2 w-3 h-3 text-white/15 z-20" />
     </>
   );
+}
 
-  const BentoCard = ({ children, className, glowColor, custom, cardRef }: { children: React.ReactNode, className: string, glowColor: string, custom: number, cardRef?: React.RefObject<HTMLDivElement | null> }) => {
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const [isHovered, setIsHovered] = useState(false);
+function BentoCard({ children, className, glowColor, custom }: { children: React.ReactNode, className: string, glowColor: string, custom: number }) {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setMousePosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
-    };
-
-    return (
-      <motion.div
-        ref={cardRef}
-        variants={bootUp3D}
-        custom={custom}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => {
-          setIsHovered(true);
-          soundFx.playHover();
-        }}
-        onMouseLeave={() => setIsHovered(false)}
-        className={`group relative overflow-hidden bg-[#0a0b0e] rounded-sm transition-all duration-300 ease-out cursor-pointer ${className}`}
-      >
-        <div
-          className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
-          style={{
-            opacity: isHovered ? 1 : 0,
-            background: `radial-gradient(500px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}, transparent 40%)`,
-          }}
-        />
-        <div className="relative z-10 h-full flex flex-col">
-          {children}
-        </div>
-      </motion.div>
-    );
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
   };
 
+  return (
+    <motion.div
+      variants={bootUp3D}
+      custom={custom}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        soundFx.playHover();
+      }}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group relative overflow-hidden bg-[#0a0b0e] rounded-sm transition-all duration-300 ease-out cursor-pointer ${className}`}
+    >
+      <div
+        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(500px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}, transparent 40%)`,
+        }}
+      />
+      <div className="relative z-10 h-full flex flex-col">
+        {children}
+      </div>
+    </motion.div>
+  );
+}
+
+export default function MissionLog({ onAssemble }: MissionLogProps) {
   return (
     <section className="relative py-24 sm:py-32 px-4 sm:px-6">
       
@@ -188,40 +221,11 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         <BentoCard 
           custom={1}
           glowColor="rgba(16, 185, 129, 0.08)"
-          cardRef={countdownRef}
           className="md:row-span-2 border border-emerald-500/20 hover:border-emerald-500/45 hover:shadow-[0_0_30px_rgba(16,185,129,0.12)] p-6 justify-between"
         >
           <CornerMarks />
           <div className="absolute -bottom-20 -left-10 w-48 h-48 rounded-full bg-emerald-500/10 blur-3xl group-hover:bg-emerald-500/20 transition-colors" />
-          
-          <div className="flex items-center gap-2.5 relative">
-            <Clock className="w-4 h-4 text-emerald-400 group-hover:-rotate-12 transition-transform" />
-            <span className="tactical-xs text-emerald-400/70">T-MINUS</span>
-          </div>
-
-          <div className="relative mt-4 flex-1 flex flex-col justify-center">
-            <p className="tactical-xs text-zinc-600 mb-4">COUNTDOWN TO LAUNCH</p>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: 'DAYS', value: time.days },
-                { label: 'HRS', value: time.hours },
-                { label: 'MIN', value: time.minutes },
-                { label: 'SEC', value: time.seconds },
-              ].map((unit, i) => (
-                <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center group-hover:border-emerald-500/30 transition-colors">
-                  <div className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums">
-                    {String(unit.value).padStart(2, '0')}
-                  </div>
-                  <div className="tactical-xs text-zinc-600 mt-1">{unit.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="relative mt-4 flex items-center gap-2 tactical-xs text-emerald-400/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 arc-pulse" />
-            [ STATUS: ARMED ]
-          </div>
+          <CountdownCard />
         </BentoCard>
 
         {/* CARD 3: LOCATION */}
