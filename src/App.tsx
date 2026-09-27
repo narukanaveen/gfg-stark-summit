@@ -30,7 +30,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black overflow-hidden pointer-events-none">
       <AnimatePresence>
         {phase === 'loading' && (
           <motion.div
@@ -62,7 +62,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
               >
                 INITIALIZING STARK PROTOCOL // ASSEMBLING ASSETS
               </motion.div>
-              <div className="text-3xl sm:text-4xl font-bold text-red-500 text-glow-red">
+              <div className="text-3xl sm:text-4xl font-bold text-red-500 text-glow-red tracking-tight">
                 {progress}%
               </div>
             </div>
@@ -77,7 +77,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-white z-50 pointer-events-none mix-blend-overlay"
+            className="absolute inset-0 bg-white z-50 mix-blend-overlay"
           />
         )}
       </AnimatePresence>
@@ -91,9 +91,10 @@ export default function App() {
   const registrationRef = useRef<HTMLDivElement>(null);
 
   const { scrollY } = useScroll();
-  const topGlowParallax = useTransform(scrollY, [0, 3000], [0, 600]);
-  const bottomGlowParallax = useTransform(scrollY, [0, 3000], [0, -500]);
-  const embersParallax = useTransform(scrollY, [0, 3000], [0, 250]);
+  // Slightly reduced the extreme parallax distances to prevent massive layer shifting lag
+  const topGlowParallax = useTransform(scrollY, [0, 3000], [0, 300]);
+  const bottomGlowParallax = useTransform(scrollY, [0, 3000], [0, -250]);
+  const embersParallax = useTransform(scrollY, [0, 3000], [0, 150]);
 
   const scrollToRegistration = () => {
     registrationRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -110,31 +111,40 @@ export default function App() {
 
       {!isBooted && <BootSequence onComplete={() => setIsBooted(true)} />}
 
+      {/* Added transform-gpu to main wrapper to force composite layer */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isBooted ? 1 : 0 }}
         transition={{ duration: 1.5, ease: 'easeInOut' }}
-        className="relative min-h-screen bg-[#0a0b0e] text-zinc-200 antialiased overflow-x-hidden"
+        className="relative min-h-screen bg-[#0a0b0e] text-zinc-200 antialiased overflow-x-hidden transform-gpu"
       >
-        {/* Hardware-accelerated halftone backdrop */}
+        {/* Halftone Backdrop - Hardware Accelerated */}
         <div
-          className="fixed inset-0 pointer-events-none z-[1] opacity-[0.4] halftone-dots transform-gpu will-change-transform"
+          className="fixed inset-0 pointer-events-none z-[1] opacity-40 halftone-dots transform-gpu"
           style={{
             maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
             WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
           }}
         />
-        <div className="fixed inset-0 pointer-events-none z-[2] opacity-[0.035] film-grain mix-blend-overlay" />
+        
+        {/* Film grain - Removed `mix-blend-overlay` (Massive performance killer) */}
+        <div className="fixed inset-0 pointer-events-none z-[2] opacity-[0.04] film-grain transform-gpu" />
 
-        {/* GPU-composited Parallax Radial Glows */}
-        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden transform-gpu">
+        {/* GPU-composited Parallax Radial Glows (REMOVED HEAVY CSS BLUR) */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
           <motion.div
             style={{ y: topGlowParallax }}
-            className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-red-600/5 blur-[120px] will-change-transform"
+            className="absolute top-[-100px] left-1/4 w-[800px] h-[800px] transform-gpu will-change-transform"
+            style={{
+              background: 'radial-gradient(circle at center, rgba(220,38,38,0.08) 0%, transparent 60%)'
+            }}
           />
           <motion.div
             style={{ y: bottomGlowParallax }}
-            className="absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full bg-amber-500/4 blur-[120px] will-change-transform"
+            className="absolute bottom-[-100px] right-1/4 w-[800px] h-[800px] transform-gpu will-change-transform"
+            style={{
+              background: 'radial-gradient(circle at center, rgba(245,158,11,0.06) 0%, transparent 60%)'
+            }}
           />
         </div>
 
