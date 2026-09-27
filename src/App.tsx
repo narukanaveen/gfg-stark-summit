@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { Volume2, VolumeX } from 'lucide-react';
 import Embers from '@/components/Embers';
 import Hero from '@/components/Hero';
 import MissionLog from '@/components/MissionLog';
 import TheRoster from '@/components/TheRoster';
 import Registration from '@/components/Registration';
 import CustomCursor from '@/components/CustomCursor';
+import { soundFx } from '@/audio';
 
-/* =========================================================================
-   AVENGERS LOADING SEQUENCE
-   ========================================================================= */
 function BootSequence({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState('loading');
@@ -17,11 +16,10 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   useEffect(() => {
     let count = 0;
     const interval = setInterval(() => {
-      count += Math.floor(Math.random() * 4) + 1; 
+      count += Math.floor(Math.random() * 4) + 1;
       if (count >= 100) {
         count = 100;
         clearInterval(interval);
-        
         setTimeout(() => setPhase('flash'), 400);
         setTimeout(() => onComplete(), 1200);
       }
@@ -32,34 +30,34 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black overflow-hidden cursor-none">
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black overflow-hidden">
       <AnimatePresence>
         {phase === 'loading' && (
           <motion.div
             exit={{ scale: 1.1, opacity: 0, filter: 'blur(10px)' }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="flex flex-col items-center w-full max-w-2xl px-6 cursor-none"
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="flex flex-col items-center w-full max-w-2xl px-6"
           >
-            <div className="relative w-full aspect-[16/9] mb-8 cursor-none">
-              <img 
-                src="/avengers.png" 
-                alt="Avengers Logo Outline" 
+            <div className="relative w-full aspect-[16/9] mb-8">
+              <img
+                src="/avengers.png"
+                alt="Avengers Logo Outline"
                 className="absolute inset-0 w-full h-full object-contain opacity-10 grayscale"
               />
-              <img 
-                src="/avengers.png" 
-                alt="Avengers Logo Reveal" 
+              <img
+                src="/avengers.png"
+                alt="Avengers Logo Reveal"
                 className="absolute inset-0 w-full h-full object-contain"
                 style={{
-                  clipPath: `polygon(0 0, ${28 + (progress * 0.72)}% 0, ${28 + (progress * 0.72)}% 100%, 0 100%)`,
-                  transition: 'clip-path 0.1s linear'
+                  clipPath: `polygon(0 0, ${28 + progress * 0.72}% 0, ${28 + progress * 0.72}% 100%, 0 100%)`,
+                  transition: 'clip-path 0.1s linear',
                 }}
               />
             </div>
-            <div className="flex flex-col items-center text-red-500 font-mono tracking-widest text-center cursor-none">
-              <motion.div 
-                animate={{ opacity: [1, 0.4, 1] }} 
-                transition={{ repeat: Infinity, duration: 1.5 }} 
+            <div className="flex flex-col items-center text-red-500 font-mono tracking-widest text-center">
+              <motion.div
+                animate={{ opacity: [1, 0.4, 1] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
                 className="text-xs sm:text-sm mb-2"
               >
                 INITIALIZING STARK PROTOCOL // ASSEMBLING ASSETS
@@ -87,23 +85,23 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-/* =========================================================================
-   MAIN APP WRAPPER
-   ========================================================================= */
 export default function App() {
   const [isBooted, setIsBooted] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const registrationRef = useRef<HTMLDivElement>(null);
-  
-  // Hook into the browser's scroll position
-  const { scrollY } = useScroll();
 
-  // Map the scroll position (0 to 3000px) to different Y translation values
-  const topGlowParallax = useTransform(scrollY, [0, 3000], [0, 600]); 
-  const bottomGlowParallax = useTransform(scrollY, [0, 3000], [0, -500]); 
+  const { scrollY } = useScroll();
+  const topGlowParallax = useTransform(scrollY, [0, 3000], [0, 600]);
+  const bottomGlowParallax = useTransform(scrollY, [0, 3000], [0, -500]);
   const embersParallax = useTransform(scrollY, [0, 3000], [0, 250]);
 
   const scrollToRegistration = () => {
     registrationRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleAudioToggle = () => {
+    const mutedState = soundFx.toggleMute();
+    setIsMuted(mutedState);
   };
 
   return (
@@ -112,37 +110,63 @@ export default function App() {
 
       {!isBooted && <BootSequence onComplete={() => setIsBooted(true)} />}
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isBooted ? 1 : 0 }}
-        transition={{ duration: 1.5, ease: "easeInOut" }}
+        transition={{ duration: 1.5, ease: 'easeInOut' }}
         className="relative min-h-screen bg-[#0a0b0e] text-zinc-200 antialiased overflow-x-hidden"
       >
-        <div 
-          className="fixed inset-0 pointer-events-none z-[1] opacity-[0.5] halftone-dots" 
-          style={{ 
-            maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)', 
-            WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)' 
-          }} 
+        {/* Hardware-accelerated halftone backdrop */}
+        <div
+          className="fixed inset-0 pointer-events-none z-[1] opacity-[0.4] halftone-dots transform-gpu will-change-transform"
+          style={{
+            maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
+          }}
         />
         <div className="fixed inset-0 pointer-events-none z-[2] opacity-[0.035] film-grain mix-blend-overlay" />
-        
-        {/* PARALLAX BACKGROUND GLOWS */}
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <motion.div 
+
+        {/* GPU-composited Parallax Radial Glows */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden transform-gpu">
+          <motion.div
             style={{ y: topGlowParallax }}
-            className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-red-600/5 blur-[150px]" 
+            className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-red-600/5 blur-[120px] will-change-transform"
           />
-          <motion.div 
+          <motion.div
             style={{ y: bottomGlowParallax }}
-            className="absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full bg-amber-500/4 blur-[150px]" 
+            className="absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full bg-amber-500/4 blur-[120px] will-change-transform"
           />
         </div>
-        
-        {/* PARALLAX EMBERS */}
-        <motion.div style={{ y: embersParallax }} className="fixed inset-0 pointer-events-none z-0">
+
+        {/* Parallax Embers */}
+        <motion.div
+          style={{ y: embersParallax }}
+          className="fixed inset-0 pointer-events-none z-0 transform-gpu will-change-transform"
+        >
           <Embers />
         </motion.div>
+
+        {/* Floating Master Audio HUD Toggle */}
+        <div className="fixed bottom-5 right-5 z-50">
+          <button
+            onClick={handleAudioToggle}
+            onMouseEnter={() => soundFx.playHover()}
+            aria-label="Toggle Audio Engine"
+            className="flex items-center gap-2 px-3 py-2 rounded-sm bg-black/80 border border-white/10 hover:border-red-500/50 backdrop-blur-md text-[10px] font-mono tracking-widest text-zinc-400 hover:text-white transition-all cursor-pointer shadow-lg"
+          >
+            {isMuted ? (
+              <>
+                <VolumeX className="w-3.5 h-3.5 text-zinc-500" />
+                <span className="text-zinc-500">[ AUDIO // MUTED ]</span>
+              </>
+            ) : (
+              <>
+                <Volume2 className="w-3.5 h-3.5 text-emerald-400 arc-pulse" />
+                <span className="text-emerald-400">[ AUDIO // ACTIVE ]</span>
+              </>
+            )}
+          </button>
+        </div>
 
         <div className="relative z-10">
           <Hero onAssemble={scrollToRegistration} />

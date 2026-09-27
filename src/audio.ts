@@ -2,25 +2,72 @@
 
 class SoundEffects {
   private ctx: AudioContext | null = null;
+  private masterGain: GainNode | null = null;
   private heartbeatInterval: number | null = null;
   private ambientInterval: number | null = null;
   private isAmbientPlaying = false;
+  private muted = false;
+
+  constructor() {
+    // Handle tab visibility to auto-suspend audio engine
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (!this.ctx) return;
+        if (document.hidden) {
+          if (this.ctx.state === 'running') this.ctx.suspend();
+        } else {
+          if (this.ctx.state === 'suspended' && !this.muted) this.ctx.resume();
+        }
+      });
+    }
+  }
 
   private init() {
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new AudioCtx();
+
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.setValueAtTime(this.muted ? 0 : 1, this.ctx.currentTime);
+      this.masterGain.connect(this.ctx.destination);
     }
-    if (this.ctx.state === 'suspended') {
+    if (this.ctx.state === 'suspended' && !this.muted) {
       this.ctx.resume();
     }
   }
 
+  // Master Mute Toggle for Evaluators
+  toggleMute(): boolean {
+    this.muted = !this.muted;
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setValueAtTime(this.muted ? 0 : 1, this.ctx.currentTime);
+    }
+    if (this.ctx && this.muted && this.ctx.state === 'running') {
+      this.ctx.suspend();
+    } else if (this.ctx && !this.muted && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    return this.muted;
+  }
+
+  isMuted(): boolean {
+    return this.muted;
+  }
+
+  private getDestination(): AudioNode | null {
+    this.init();
+    return this.masterGain || this.ctx?.destination || null;
+  }
+
   // Deep cinematic sub-bass heartbeat thump (Lub-dub)
   playHeartbeat() {
+    if (this.muted) return;
     try {
       this.init();
-      if (!this.ctx) return;
+      const dest = this.getDestination();
+      if (!this.ctx || !dest) return;
 
       const now = this.ctx.currentTime;
       [0, 0.16].forEach((delay, index) => {
@@ -36,17 +83,14 @@ class SoundEffects {
         gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.35);
 
         osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(dest);
 
         osc.start(now + delay);
         osc.stop(now + delay + 0.35);
       });
-    } catch {
-      // Audio context restricted
-    }
+    } catch {}
   }
 
-  // Start continuous rhythmic heartbeat loop matching the visual animation
   startHeartbeatLoop(intervalMs = 3500) {
     if (this.heartbeatInterval) return;
     this.playHeartbeat();
@@ -62,17 +106,18 @@ class SoundEffects {
     }
   }
 
-  // Continuous Cinematic Sci-Fi Ambient Theme
   startAmbientTheme() {
     if (this.isAmbientPlaying) return;
     this.init();
     this.isAmbientPlaying = true;
 
     const playDroneLayer = () => {
+      if (this.muted) return;
       try {
-        if (!this.ctx || !this.isAmbientPlaying) return;
+        const dest = this.getDestination();
+        if (!this.ctx || !this.isAmbientPlaying || !dest) return;
         const now = this.ctx.currentTime;
-        
+
         const chords = [110, 130.81, 164.81, 196];
         const chord = chords[Math.floor(Math.random() * chords.length)];
 
@@ -92,7 +137,7 @@ class SoundEffects {
 
         osc.connect(filter);
         filter.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(dest);
 
         osc.start(now);
         osc.stop(now + 5.0);
@@ -111,33 +156,33 @@ class SoundEffects {
     }
   }
 
-  // UI Hover - Sleek, subtle high-frequency glass tick (No gamey pitch sweeps)
   playHover() {
+    if (this.muted) return;
     try {
-      this.init();
-      if (!this.ctx) return;
+      const dest = this.getDestination();
+      if (!this.ctx || !dest) return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
       osc.type = 'sine';
       osc.frequency.setValueAtTime(2000, this.ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.02);
-      
+
       gain.gain.setValueAtTime(0.015, this.ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.02);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(dest);
       osc.start();
       osc.stop(this.ctx.currentTime + 0.02);
     } catch {}
   }
 
-  // UI Activate - Heavy, authoritative mechanical lock-in thud
   playActivate() {
+    if (this.muted) return;
     try {
-      this.init();
-      if (!this.ctx) return;
+      const dest = this.getDestination();
+      if (!this.ctx || !dest) return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       const filter = this.ctx.createBiquadFilter();
@@ -155,23 +200,21 @@ class SoundEffects {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(dest);
       osc.start();
       osc.stop(this.ctx.currentTime + 0.08);
     } catch {}
   }
 
-  // Success Generation - Cinematic Authorization Swell (Dark, serious power-up)
   playSuccess() {
+    if (this.muted) return;
     try {
-      this.init();
-      if (!this.ctx) return;
+      const dest = this.getDestination();
+      if (!this.ctx || !dest) return;
 
       const now = this.ctx.currentTime;
-      
-      // A-E-A open power chords for a serious, non-childish drone swell
-      const chords = [110.00, 164.81, 220.00]; 
-      
+      const chords = [110.0, 164.81, 220.0];
+
       chords.forEach((freq, index) => {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
@@ -181,19 +224,18 @@ class SoundEffects {
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(freq, now);
 
-        // Filter opens up to sound like energy surging, then closes
         filter.type = 'lowpass';
         filter.frequency.setValueAtTime(400, now);
         filter.frequency.exponentialRampToValueAtTime(3000, now + 0.4);
         filter.frequency.exponentialRampToValueAtTime(100, now + 1.5);
 
         gain.gain.setValueAtTime(0.001, now);
-        gain.gain.linearRampToValueAtTime(0.04, now + 0.1 + (index * 0.05));
+        gain.gain.linearRampToValueAtTime(0.04, now + 0.1 + index * 0.05);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
 
         osc.connect(filter);
         filter.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(dest);
 
         osc.start(now);
         osc.stop(now + 1.5);
@@ -201,34 +243,34 @@ class SoundEffects {
     } catch {}
   }
 
-  // Crisp digital clock tick - Subdued, muted modern UI click
   playTick() {
+    if (this.muted) return;
     try {
-      this.init();
-      if (!this.ctx) return;
+      const dest = this.getDestination();
+      if (!this.ctx || !dest) return;
 
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
       osc.type = 'sine';
       osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-      
+
       gain.gain.setValueAtTime(0.015, this.ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.01);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(dest);
 
       osc.start();
       osc.stop(this.ctx.currentTime + 0.01);
     } catch {}
   }
 
-  // Directive selection - Deep heavy data process pulse
   playDirectiveSelect() {
+    if (this.muted) return;
     try {
-      this.init();
-      if (!this.ctx) return;
+      const dest = this.getDestination();
+      if (!this.ctx || !dest) return;
 
       const now = this.ctx.currentTime;
       const osc = this.ctx.createOscillator();
@@ -236,7 +278,7 @@ class SoundEffects {
       const filter = this.ctx.createBiquadFilter();
 
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(60, now); // Very low rumble
+      osc.frequency.setValueAtTime(60, now);
 
       filter.type = 'bandpass';
       filter.frequency.setValueAtTime(500, now);
@@ -247,7 +289,7 @@ class SoundEffects {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(dest);
 
       osc.start(now);
       osc.stop(now + 0.1);
