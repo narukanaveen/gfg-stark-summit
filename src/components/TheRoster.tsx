@@ -50,7 +50,6 @@ const tracks: TrackCard[] = [
     tech: ['PYTORCH', 'LANGCHAIN', 'HUGGINGFACE', 'RAG'],
     coord: 'TRACK-02 / 40.7°N',
     auraColor: 'rgba(248, 232, 37, 0.4)',
-    // Shrunk slightly to keep his taller head safely inside the box
     imgScale: 0.74,
     imgHoverScale: 0.98,
     imgY: 20,
@@ -170,7 +169,7 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
         <div className={`absolute inset-0 rounded-sm bg-gradient-to-b ${a.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10`} />
 
         {/* =========================================================================
-            CLIP-PATH TRICK: Allows top overflow, strictly cuts off the bottom bleed
+            MASK-IMAGE TRICK: Flawless soft fade at the bottom, no sharp cuts
            ========================================================================= */}
         <div 
           className="relative h-[260px] w-full flex items-end justify-center rounded-t-sm z-20" 
@@ -193,10 +192,15 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
             }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className="absolute bottom-0 w-[95%] h-[135%] object-contain object-bottom origin-bottom z-30 pointer-events-none"
-            style={{ filter: `drop-shadow(0 -10px 20px ${track.auraColor}) drop-shadow(0 10px 20px rgba(0,0,0,0.8))` }}
+            style={{ 
+              filter: `drop-shadow(0 -10px 20px ${track.auraColor}) drop-shadow(0 10px 20px rgba(0,0,0,0.8))`,
+              WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%)',
+              maskImage: 'linear-gradient(to top, transparent 0%, black 15%)'
+            }}
           />
 
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/90 to-transparent pointer-events-none z-40" />
+          {/* Thickened solid gradient to perfectly blend the masked image into the background */}
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e] to-transparent pointer-events-none z-40" />
 
           <div className="absolute top-4 left-4 z-40">
             <span className={`px-2.5 py-1 tactical-xs border ${a.badge} rounded-sm font-semibold tracking-wider`}>
