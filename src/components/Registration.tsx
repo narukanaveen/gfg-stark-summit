@@ -179,24 +179,66 @@ export default function Registration() {
               <div className="h-full border-r-2 border-dashed border-red-400/40" />
             </div>
 
-            {/* Right Ticket Stub Section */}
-            <div className="z-10 w-full md:w-48 text-center md:text-right flex flex-row md:flex-col justify-between items-center md:items-end border-t md:border-t-0 pt-4 md:pt-0 border-red-500/30">
-              <div>
-                <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase">LOCATION</div>
-                <div className="text-base sm:text-xl font-black tracking-tight text-white">BENNETT UNIV</div>
-              </div>
+            {/* Right Ticket Stub Section with Synchronized 3D Perspective */}
+            <div className="z-10 w-full md:w-48 border-t md:border-t-0 pt-4 md:pt-0 border-red-500/30 relative" style={{ perspective: '1000px' }}>
+              <AnimatePresence mode="wait">
+                {status !== 'done' ? (
+                  /* Locked / Classified State */
+                  <motion.div
+                    key="stub-locked"
+                    initial={{ opacity: 0, rotateX: 90, scale: 0.95 }}
+                    animate={{ opacity: 1, rotateX: 0, scale: 1 }}
+                    exit={{ opacity: 0, rotateX: -90, scale: 0.95 }}
+                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                    className="text-center md:text-right flex flex-row md:flex-col justify-between items-center md:items-end w-full h-full gap-2 md:gap-4"
+                  >
+                    <div>
+                      <div className="text-[10px] sm:text-[11px] font-bold text-red-200/40 tracking-widest uppercase">LOCATION</div>
+                      <div className="text-base sm:text-xl font-black tracking-tight text-white/30 blur-[2px]">CLASSIFIED</div>
+                    </div>
 
-              <div className="my-0 md:my-3">
-                <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase">ACCESS DATE</div>
-                <div className="text-xs sm:text-sm font-bold tracking-wider text-amber-300">2026.09.27</div>
-              </div>
+                    <div className="my-0 md:my-1">
+                      <div className="text-[10px] sm:text-[11px] font-bold text-red-200/40 tracking-widest uppercase">ACCESS DATE</div>
+                      <div className="text-xs sm:text-sm font-bold tracking-wider text-amber-300/30 blur-[2px]">ENCRYPTED</div>
+                    </div>
 
-              <div>
-                <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase hidden md:block">SECURITY</div>
-                <div className="text-[11px] sm:text-xs font-bold text-white tracking-widest bg-black/40 py-1 px-2 rounded-md inline-block mt-1 border border-white/10">
-                  LEVEL 9 VIP
-                </div>
-              </div>
+                    <div>
+                      <div className="text-[10px] sm:text-[11px] font-bold text-red-200/40 tracking-widest uppercase hidden md:block">SECURITY</div>
+                      <div className="text-[11px] sm:text-xs font-bold text-white/50 tracking-widest bg-black/20 py-1 px-2 rounded-md inline-block mt-1 border border-white/5">
+                        PENDING
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  /* Revealed State */
+                  <motion.div
+                    key="stub-revealed"
+                    initial={{ opacity: 0, rotateX: 90, scale: 0.95 }}
+                    animate={{ opacity: 1, rotateX: 0, scale: 1 }}
+                    exit={{ opacity: 0, rotateX: -90, scale: 0.95 }}
+                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                    className="text-center md:text-right flex flex-row md:flex-col justify-between items-center md:items-end w-full h-full gap-2 md:gap-4"
+                  >
+                    <div>
+                      <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase">LOCATION</div>
+                      <div className="text-base sm:text-xl font-black tracking-tight text-white">BENNETT UNIV</div>
+                    </div>
+
+                    <div className="my-0 md:my-1">
+                      <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase">ACCESS DATE</div>
+                      {/* Using the summit launch date here */}
+                      <div className="text-xs sm:text-sm font-bold tracking-wider text-amber-300">2026.10.15</div>
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase hidden md:block">SECURITY</div>
+                      <div className="text-[11px] sm:text-xs font-bold text-white tracking-widest bg-black/40 py-1 px-2 rounded-md inline-block mt-1 border border-white/10">
+                        LEVEL 9 VIP
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
           </div>
