@@ -5,6 +5,7 @@ import Hero from '@/components/Hero';
 import MissionLog from '@/components/MissionLog';
 import TheRoster from '@/components/TheRoster';
 import Registration from '@/components/Registration';
+import CustomCursor from '@/components/CustomCursor';
 
 /* =========================================================================
    AVENGERS LOADING SEQUENCE
@@ -32,17 +33,17 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black overflow-hidden cursor-none">
       
       <AnimatePresence>
         {phase === 'loading' && (
           <motion.div
             exit={{ scale: 1.1, opacity: 0, filter: 'blur(10px)' }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="flex flex-col items-center w-full max-w-2xl px-6"
+            className="flex flex-col items-center w-full max-w-2xl px-6 cursor-none"
           >
             {/* The Logo Reveal */}
-            <div className="relative w-full aspect-[16/9] mb-8">
+            <div className="relative w-full aspect-[16/9] mb-8 cursor-none">
               <img 
                 src="/avengers.png" 
                 alt="Avengers Logo Outline" 
@@ -61,7 +62,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
             </div>
 
             {/* Initialization Text & Counter */}
-            <div className="flex flex-col items-center text-red-500 font-mono tracking-widest text-center">
+            <div className="flex flex-col items-center text-red-500 font-mono tracking-widest text-center cursor-none">
               <motion.div 
                 animate={{ opacity: [1, 0.4, 1] }} 
                 transition={{ repeat: Infinity, duration: 1.5 }} 
@@ -107,6 +108,12 @@ export default function App() {
 
   return (
     <>
+      {/* 
+        Custom Tactical HUD Cursor - Placed at the highest level 
+        so it overrides the standard cursor across the entire app.
+      */}
+      <CustomCursor />
+
       {!isBooted && <BootSequence onComplete={() => setIsBooted(true)} />}
 
       {/* 
