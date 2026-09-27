@@ -14,21 +14,19 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState('loading'); // 'loading' | 'flash'
 
   useEffect(() => {
-    // Rapid Progress Counter
     let count = 0;
     const interval = setInterval(() => {
-      // Randomize the loading speed for a realistic terminal feel
-      count += Math.floor(Math.random() * 12) + 3; 
+      // Slower, more suspenseful loading (adds 1 to 4 percent per tick)
+      count += Math.floor(Math.random() * 4) + 1; 
       if (count >= 100) {
         count = 100;
         clearInterval(interval);
         
-        // Trigger the flash and transition out when hitting 100%
         setTimeout(() => setPhase('flash'), 400);
         setTimeout(() => onComplete(), 1200);
       }
       setProgress(count);
-    }, 80);
+    }, 70); // Slightly slower tick interval
 
     return () => clearInterval(interval);
   }, [onComplete]);
@@ -45,20 +43,17 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
           >
             {/* The Logo Reveal */}
             <div className="relative w-full aspect-[16/9] mb-8">
-              {/* Dimmed background version (optional, keeps the space reserved) */}
               <img 
                 src="/avengers.png" 
                 alt="Avengers Logo Outline" 
                 className="absolute inset-0 w-full h-full object-contain opacity-10 grayscale"
               />
               
-              {/* The bright red reveal version */}
               <img 
                 src="/avengers.png" 
                 alt="Avengers Logo Reveal" 
                 className="absolute inset-0 w-full h-full object-contain"
                 style={{
-                  // Starts at 28% (showing the 'A') and wipes to 100% based on progress
                   clipPath: `polygon(0 0, ${28 + (progress * 0.72)}% 0, ${28 + (progress * 0.72)}% 100%, 0 100%)`,
                   transition: 'clip-path 0.1s linear'
                 }}
@@ -112,14 +107,16 @@ export default function App() {
 
   return (
     <>
-      {/* 1. Render the cinematic pre-loader until finished */}
       {!isBooted && <BootSequence onComplete={() => setIsBooted(true)} />}
 
-      {/* 2. Main App Content */}
+      {/* 
+        Removed the `scale` animation from this wrapper. 
+        Scaling heavy CSS blurs and masks was crushing the GPU and causing the lag.
+      */}
       <motion.div 
-        initial={{ opacity: 0, scale: 1.05 }}
-        animate={{ opacity: isBooted ? 1 : 0, scale: isBooted ? 1 : 1.05 }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isBooted ? 1 : 0 }}
+        transition={{ duration: 1.5, ease: "easeInOut" }}
         className="relative min-h-screen bg-[#0a0b0e] text-zinc-200 antialiased overflow-x-hidden"
       >
         <div 
