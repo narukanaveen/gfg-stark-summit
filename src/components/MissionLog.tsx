@@ -9,11 +9,13 @@ interface MissionLogProps {
 
 const TARGET_DATE = new Date('2026-10-15T09:00:00').getTime();
 
-// Isolated Countdown Component so only this component re-renders every second (stops parent re-animations)
+// Isolated Countdown Component with glitch effect & live viewport audio scoping
 function CountdownCard() {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(cardRef, { once: true, margin: '-50px' });
+  
+  // Notice NO 'once: true' here so it accurately turns false when you scroll away from this section
+  const isInView = useInView(cardRef, { margin: '-50px' });
 
   useEffect(() => {
     const tick = () => {
@@ -25,6 +27,7 @@ function CountdownCard() {
         seconds: Math.floor((diff % 60000) / 1000),
       });
 
+      // Sound ONLY plays when this specific card is currently on your screen
       if (isInView) {
         soundFx.playTick();
       }
@@ -50,11 +53,24 @@ function CountdownCard() {
             { label: 'HRS', value: time.hours },
             { label: 'MIN', value: time.minutes },
             { label: 'SEC', value: time.seconds },
-          ].map((unit) => (
+          ].map((unit, i) => (
             <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center group-hover:border-emerald-500/30 transition-colors">
-              <div className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums">
+              {/* Restored Glitching Numbers Effect */}
+              <motion.div 
+                animate={{ 
+                  opacity: [1, 1, 0.4, 1, 0.8, 1, 1],
+                  x: [0, 0, -2, 2, 0, 0, 0]
+                }}
+                transition={{ 
+                  duration: 4, 
+                  repeat: Infinity, 
+                  times: [0, 0.9, 0.92, 0.94, 0.96, 0.98, 1],
+                  delay: i * 0.2 
+                }}
+                className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums"
+              >
                 {String(unit.value).padStart(2, '0')}
-              </div>
+              </motion.div>
               <div className="tactical-xs text-zinc-600 mt-1">{unit.label}</div>
             </div>
           ))}
