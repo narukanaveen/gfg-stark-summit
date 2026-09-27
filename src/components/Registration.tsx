@@ -143,29 +143,41 @@ export default function Registration() {
                     </motion.button>
                   </motion.form>
                 ) : (
-                  /* Success Ticket State */
+                  /* Success Ticket State with Terminal Output */
                   <motion.div
                     key="ticket-success"
                     initial={{ opacity: 0, rotateX: 90, scale: 0.95 }}
                     animate={{ opacity: 1, rotateX: 0, scale: 1 }}
                     exit={{ opacity: 0, rotateX: -90, scale: 0.95 }}
                     transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                    className="bg-black/40 p-3.5 sm:p-4 rounded-lg border border-emerald-400/40 backdrop-blur-sm shadow-xl"
+                    className="bg-black/60 p-3.5 sm:p-4 rounded-lg border border-emerald-500/50 backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.15)] flex flex-col"
                   >
-                    <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold mb-1">
-                      <ShieldCheck className="w-4 h-4" /> PASS GRANTED & LOGGED
+                    <div className="flex items-center justify-between mb-2 border-b border-emerald-500/20 pb-2">
+                      <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+                        <ShieldCheck className="w-4 h-4" /> SECURE CHANNEL OPEN
+                      </div>
+                      <div className="text-xs text-amber-300 font-mono font-semibold tracking-wider">
+                        {badgeId}
+                      </div>
                     </div>
-                    <div className="text-xs text-amber-300 font-semibold tracking-wider mb-1.5">
-                      ID: {badgeId}
+                    
+                    <div className="text-[11px] sm:text-xs text-emerald-100/70 font-mono flex flex-col gap-1 mb-4 text-left">
+                      <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+                        <span className="text-emerald-500">&gt;</span> AUTH_NODE: {email}
+                      </motion.span>
+                      <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
+                        <span className="text-emerald-500">&gt;</span> SYNCING DEVELOPER IDENTITY... <span className="text-amber-300">[OK]</span>
+                      </motion.span>
+                      <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
+                        <span className="text-emerald-500">&gt;</span> CLEARANCE: LEVEL 9 GRANTED
+                      </motion.span>
                     </div>
-                    <div className="text-[11px] sm:text-xs text-zinc-200 truncate mb-3">
-                      NODE: {email}
-                    </div>
+
                     <button
                       type="button"
                       onClick={resetForm}
                       onMouseEnter={() => soundFx.playHover()}
-                      className="text-[11px] sm:text-xs text-red-200 hover:text-white underline uppercase font-semibold tracking-wider cursor-pointer"
+                      className="mt-auto self-start text-[10px] sm:text-xs text-zinc-400 hover:text-white border border-zinc-700 hover:border-zinc-500 px-3 py-1.5 rounded bg-zinc-900/50 uppercase font-semibold tracking-wider cursor-pointer transition-colors"
                     >
                       Issue New Pass
                     </button>
@@ -190,23 +202,30 @@ export default function Registration() {
                     animate={{ opacity: 1, rotateX: 0, scale: 1 }}
                     exit={{ opacity: 0, rotateX: -90, scale: 0.95 }}
                     transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                    className="text-center md:text-right flex flex-row md:flex-col justify-between items-center md:items-end w-full h-full gap-2 md:gap-4"
+                    className="text-center md:text-right flex flex-col justify-center items-center md:items-end w-full h-full gap-3"
                   >
-                    <div>
-                      <div className="text-[10px] sm:text-[11px] font-bold text-red-200/40 tracking-widest uppercase">LOCATION</div>
-                      <div className="text-base sm:text-xl font-black tracking-tight text-white/30 blur-[2px]">CLASSIFIED</div>
-                    </div>
-
-                    <div className="my-0 md:my-1">
-                      <div className="text-[10px] sm:text-[11px] font-bold text-red-200/40 tracking-widest uppercase">ACCESS DATE</div>
-                      <div className="text-xs sm:text-sm font-bold tracking-wider text-amber-300/30 blur-[2px]">ENCRYPTED</div>
-                    </div>
-
-                    <div>
-                      <div className="text-[10px] sm:text-[11px] font-bold text-red-200/40 tracking-widest uppercase hidden md:block">SECURITY</div>
-                      <div className="text-[11px] sm:text-xs font-bold text-white/50 tracking-widest bg-black/20 py-1 px-2 rounded-md inline-block mt-1 border border-white/5">
-                        PENDING
+                    <div className="flex flex-row md:flex-col justify-between items-center md:items-end w-full gap-2 md:gap-4">
+                      <div>
+                        <div className="text-[10px] sm:text-[11px] font-bold text-red-200/40 tracking-widest uppercase">LOCATION</div>
+                        <div className="text-base sm:text-xl font-black tracking-tight text-white/30 blur-[2px]">CLASSIFIED</div>
                       </div>
+
+                      <div className="my-0 md:my-1">
+                        <div className="text-[10px] sm:text-[11px] font-bold text-red-200/40 tracking-widest uppercase">ACCESS DATE</div>
+                        <div className="text-xs sm:text-sm font-bold tracking-wider text-amber-300/30 blur-[2px]">ENCRYPTED</div>
+                      </div>
+
+                      <div>
+                        <div className="text-[10px] sm:text-[11px] font-bold text-red-200/40 tracking-widest uppercase hidden md:block">SECURITY</div>
+                        <div className="text-[11px] sm:text-xs font-bold text-white/50 tracking-widest bg-black/20 py-1 px-2 rounded-md inline-block mt-1 border border-white/5">
+                          PENDING
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* AESTHETIC PROMPT TO FILL OUT FORM */}
+                    <div className="mt-2 text-[9px] sm:text-[10px] font-mono text-amber-300/80 tracking-widest uppercase animate-pulse border border-amber-300/20 px-2 py-1 rounded bg-black/40">
+                      [ AWAITING CREDENTIALS TO DECRYPT ]
                     </div>
                   </motion.div>
                 ) : (
@@ -226,13 +245,12 @@ export default function Registration() {
 
                     <div className="my-0 md:my-1">
                       <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase">ACCESS DATE</div>
-                      {/* Using the summit launch date here */}
                       <div className="text-xs sm:text-sm font-bold tracking-wider text-amber-300">2026.10.15</div>
                     </div>
 
                     <div>
                       <div className="text-[10px] sm:text-[11px] font-bold text-red-200 tracking-widest uppercase hidden md:block">SECURITY</div>
-                      <div className="text-[11px] sm:text-xs font-bold text-white tracking-widest bg-black/40 py-1 px-2 rounded-md inline-block mt-1 border border-white/10">
+                      <div className="text-[11px] sm:text-xs font-bold text-white tracking-widest bg-emerald-500/20 py-1 px-2 rounded-md inline-block mt-1 border border-emerald-500/30 text-emerald-400">
                         LEVEL 9 VIP
                       </div>
                     </div>
