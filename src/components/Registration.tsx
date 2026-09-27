@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Check, Github, Twitter, Instagram, Linkedin, Plus, Ticket, ShieldCheck } from 'lucide-react';
+import { Send, Github, Twitter, Instagram, Linkedin, Plus, Ticket, ShieldCheck } from 'lucide-react';
 
 export default function Registration() {
   const [email, setEmail] = useState('');
@@ -65,7 +65,7 @@ export default function Registration() {
           Claim your official Stark Developer Summit credential ticket. Enter your clearance channel below to generate your pass.
         </motion.p>
 
-        {/* Interactive Marvel Ticket Container with Hover Physics */}
+        {/* Interactive Marvel Ticket Container with Scoped Apple-grade Font */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -73,12 +73,13 @@ export default function Registration() {
           transition={{ duration: 0.8, delay: 0.3 }}
           whileHover={{ y: -6, rotateX: 2, rotateY: -2 }}
           className="max-w-2xl mx-auto relative group perspective-1000"
+          style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", sans-serif', letterSpacing: '-0.01em' }}
         >
           {/* Ticket Shadow Glow */}
           <div className="absolute inset-0 bg-red-600/20 blur-2xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
           {/* Main Red Ticket Body */}
-          <div className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-900 rounded-xl p-6 sm:p-8 text-white shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-red-500/40 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-900 rounded-2xl p-6 sm:p-10 text-white shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-red-500/40 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
             
             {/* Background Ticket Watermark Pattern */}
             <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
@@ -88,13 +89,13 @@ export default function Registration() {
             {/* Left Ticket Section: Header & Inputs */}
             <div className="flex-1 text-left z-10 w-full">
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-0.5 rounded bg-black/30 font-mono text-[10px] tracking-widest text-amber-300 uppercase border border-amber-400/30">
+                <span className="px-2.5 py-1 rounded-md bg-black/30 text-[11px] font-medium tracking-widest text-amber-300 uppercase border border-amber-400/30">
                   STARK SUMMIT '26
                 </span>
-                <span className="font-mono text-[10px] text-red-200 tracking-wider">BENNETT UNIV</span>
+                <span className="text-[11px] font-medium text-red-200 tracking-wider">BENNETT UNIV</span>
               </div>
 
-              <h3 className="font-display text-3xl sm:text-4xl tracking-wider mb-4 text-white drop-shadow-md">
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-5 text-white drop-shadow-md">
                 VIP ADMIT ONE
               </h3>
 
@@ -109,7 +110,7 @@ export default function Registration() {
                     className="space-y-4"
                   >
                     <div>
-                      <label className="block font-mono text-[11px] text-red-200 tracking-wider uppercase mb-1.5">
+                      <label className="block text-[12px] font-semibold text-red-100 tracking-wide uppercase mb-1.5">
                         Authorized Email Terminal:
                       </label>
                       <input
@@ -117,9 +118,9 @@ export default function Registration() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="NAME@DOMAIN.COM"
-                        className="w-full px-4 py-3 rounded bg-white text-zinc-900 font-mono text-xs sm:text-sm tracking-wider uppercase border-2 border-red-400 placeholder:text-zinc-400
-                          focus:outline-none focus:border-amber-300 focus:shadow-[0_0_15px_rgba(252,211,77,0.5)] transition-all duration-200"
+                        placeholder="name@domain.com"
+                        className="w-full px-4 py-3.5 rounded-lg bg-white text-zinc-900 text-sm font-medium tracking-normal border-2 border-red-400 placeholder:text-zinc-400 shadow-inner
+                          focus:outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-300/30 transition-all duration-200"
                       />
                     </div>
 
@@ -128,7 +129,7 @@ export default function Registration() {
                       disabled={status !== 'idle'}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full py-3.5 rounded bg-black text-white font-cond font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg hover:bg-zinc-900 transition-all cursor-pointer border border-white/10"
+                      className="w-full py-3.5 rounded-lg bg-black text-white font-semibold text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg hover:bg-zinc-900 transition-all cursor-pointer border border-white/10"
                     >
                       {status === 'loading' ? (
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -144,21 +145,21 @@ export default function Registration() {
                     key="ticket-success"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="bg-black/40 p-4 rounded border border-emerald-400/40 backdrop-blur-sm"
+                    className="bg-black/40 p-4 rounded-lg border border-emerald-400/40 backdrop-blur-sm"
                   >
-                    <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs font-bold mb-1">
+                    <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold mb-1">
                       <ShieldCheck className="w-4 h-4" /> PASS GRANTED & LOGGED
                     </div>
-                    <div className="font-mono text-xs text-amber-300 tracking-wider mb-2">
+                    <div className="text-xs text-amber-300 font-semibold tracking-wider mb-2">
                       ID: {badgeId}
                     </div>
-                    <div className="font-mono text-[10px] text-zinc-300 truncate mb-3">
+                    <div className="text-xs text-zinc-200 truncate mb-3">
                       NODE: {email}
                     </div>
                     <button
                       type="button"
                       onClick={resetForm}
-                      className="text-[10px] font-mono text-red-200 hover:text-white underline uppercase tracking-wider"
+                      className="text-xs text-red-200 hover:text-white underline uppercase font-semibold tracking-wider cursor-pointer"
                     >
                       Issue New Pass
                     </button>
@@ -167,7 +168,7 @@ export default function Registration() {
               </AnimatePresence>
             </div>
 
-            {/* Vertical Ticket Perforation Divider (Desktop) */}
+            {/* Vertical Ticket Perforation Divider */}
             <div className="hidden md:flex flex-col items-center justify-center self-stretch px-2">
               <div className="h-full border-r-2 border-dashed border-red-400/40" />
             </div>
@@ -175,18 +176,18 @@ export default function Registration() {
             {/* Right Ticket Stub Section */}
             <div className="z-10 w-full md:w-48 text-center md:text-right flex flex-col justify-between border-t md:border-t-0 pt-4 md:pt-0 border-red-500/30">
               <div>
-                <div className="font-mono text-[10px] text-red-200 tracking-widest uppercase">LOCATION</div>
-                <div className="font-display text-lg tracking-wider text-white">BENNETT UNIV</div>
+                <div className="text-[11px] font-bold text-red-200 tracking-widest uppercase">LOCATION</div>
+                <div className="text-xl font-black tracking-tight text-white">BENNETT UNIV</div>
               </div>
 
               <div className="my-4">
-                <div className="font-mono text-[10px] text-red-200 tracking-widest uppercase">ACCESS DATE</div>
-                <div className="font-mono text-sm tracking-wider text-amber-300 font-bold">2026.09.27</div>
+                <div className="text-[11px] font-bold text-red-200 tracking-widest uppercase">ACCESS DATE</div>
+                <div className="text-sm font-bold tracking-wider text-amber-300">2026.09.27</div>
               </div>
 
               <div>
-                <div className="font-mono text-[10px] text-red-200 tracking-widest uppercase">SECURITY</div>
-                <div className="font-mono text-xs text-white tracking-widest bg-black/40 py-1 px-2 rounded inline-block mt-1">
+                <div className="text-[11px] font-bold text-red-200 tracking-widest uppercase">SECURITY</div>
+                <div className="text-xs font-bold text-white tracking-widest bg-black/40 py-1 px-2.5 rounded-md inline-block mt-1 border border-white/10">
                   LEVEL 9 VIP
                 </div>
               </div>

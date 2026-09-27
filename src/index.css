@@ -20,12 +20,11 @@
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Oswald', 'Inter', system-ui, sans-serif;
     background-color: #0a0b0e;
     color: #e4e4e7;
     overflow-x: hidden;
     font-weight: 300;
-    letter-spacing: -0.011em;
   }
 
   ::selection {
@@ -96,7 +95,6 @@
     text-shadow: 0 0 12px rgba(255, 255, 255, 0.08);
   }
 
-  /* Solid panel borders prevent hover seams and mask bleed-through */
   .grad-border-red {
     border: 1px solid rgba(237, 29, 36, 0.28);
   }
@@ -134,7 +132,6 @@
     mask-image: radial-gradient(ellipse 65% 55% at 50% 42%, black 30%, transparent 100%);
   }
 
-  /* Marvel Red → Stark Gold text gradient */
   .gradient-text-marvel {
     background: linear-gradient(120deg, #ED1D24 0%, #FF6B35 40%, #F8E825 100%);
     -webkit-background-clip: text;
@@ -142,12 +139,10 @@
     -webkit-text-fill-color: transparent;
   }
 
-  /* Film grain overlay */
   .film-grain {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Halftone dot pattern — comic book texture */
   .halftone-dots {
     background-image: radial-gradient(circle, rgba(237, 29, 36, 0.08) 1px, transparent 1.5px);
     background-size: 8px 8px;
@@ -171,13 +166,6 @@
   94% { opacity: 1; }
   96% { opacity: 0.9; }
   97% { opacity: 1; }
-}
-
-@keyframes ember-rise {
-  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-  10% { opacity: 0.8; }
-  90% { opacity: 0.3; }
-  100% { transform: translateY(-100vh) translateX(var(--drift, 20px)) scale(0.3); opacity: 0; }
 }
 
 .arc-pulse {
