@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --carbon-bg: #0a0b0e;
+    --marvel-red: #ED1D24;
+    --stark-gold: #F8E825;
+    --gfg-green: #10b981;
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Oswald', 'Inter', system-ui, sans-serif;
+    background-color: #0a0b0e;
+    color: #e4e4e7;
+    overflow-x: hidden;
+    font-weight: 300;
+  }
+
+  ::selection {
+    background-color: rgba(237, 29, 36, 0.3);
+    color: #F8E825;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0a0b0e;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ED1D24, #F8E825);
+    border-radius: 2px;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Bebas Neue', 'Oswald', sans-serif;
+    letter-spacing: 0.02em;
+  }
+
+  .font-cond {
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+  }
+
+  .font-mono-sp {
+    font-family: 'Space Mono', 'JetBrains Mono', monospace;
+  }
+
+  .tactical-xs {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  .tactical-sm {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  /* Marvel Red glow */
+  .text-glow-red {
+    text-shadow: 0 0 18px rgba(237, 29, 36, 0.5), 0 0 36px rgba(237, 29, 36, 0.2);
+  }
+
+  /* Stark Gold glow */
+  .text-glow-gold {
+    text-shadow: 0 0 18px rgba(248, 232, 37, 0.45), 0 0 36px rgba(248, 232, 37, 0.15);
+  }
+
+  /* Emerald glow — CTA only */
+  .text-glow-emerald {
+    text-shadow: 0 0 18px rgba(16, 185, 129, 0.45), 0 0 36px rgba(16, 185, 129, 0.15);
+  }
+
+  .text-glow-soft {
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.08);
+  }
+
+  /* Solid panel borders prevent hover seams and mask bleed-through */
+  .grad-border-red {
+    border: 1px solid rgba(237, 29, 36, 0.28);
+  }
+
+  .grad-border-emerald {
+    border: 1px solid rgba(16, 185, 129, 0.28);
+  }
+
+  .grad-border-neutral {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-panel {
+    background: rgba(12, 13, 17, 0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgba(237, 29, 36, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(237, 29, 36, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .grid-pattern-fine {
+    background-image:
+      linear-gradient(rgba(237, 29, 36, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(237, 29, 36, 0.05) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  .radial-fade {
+    -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 42%, black 30%, transparent 100%);
+    mask-image: radial-gradient(ellipse 65% 55% at 50% 42%, black 30%, transparent 100%);
+  }
+
+  /* Marvel Red → Stark Gold text gradient */
+  .gradient-text-marvel {
+    background: linear-gradient(120deg, #ED1D24 0%, #FF6B35 40%, #F8E825 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Film grain overlay */
+  .film-grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Halftone dot pattern — comic book texture */
+  .halftone-dots {
+    background-image: radial-gradient(circle, rgba(237, 29, 36, 0.08) 1px, transparent 1.5px);
+    background-size: 8px 8px;
+  }
+}
+
+@keyframes arc-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(2000%); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.85; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
+@keyframes ember-rise {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-100vh) translateX(var(--drift, 20px)) scale(0.3); opacity: 0; }
+}
+
+.arc-pulse {
+  animation: arc-pulse 3s ease-in-out infinite;
+}
+
+.scan-line {
+  animation: scan-line 5s linear infinite;
+}
+
+.flicker {
+  animation: flicker 6s linear infinite;
+}
