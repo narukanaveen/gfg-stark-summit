@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, Plus } from 'lucide-react';
+import { ChevronDown, Plus, Volume2 } from 'lucide-react';
 import { soundFx } from '../audio';
 
 interface HeroProps {
@@ -8,20 +8,33 @@ interface HeroProps {
 }
 
 export default function Hero({ onAssemble }: HeroProps) {
-  // Trigger deep cinematic sub-bass heartbeat on boot
+  // Start the synced heartbeat loop and continuous background theme on mount
   useEffect(() => {
-    const timer = setTimeout(() => {
-      soundFx.playHeartbeat();
-    }, 300);
-    return () => clearTimeout(timer);
+    const handleFirstInteraction = () => {
+      soundFx.startHeartbeatLoop(3500); // Thumps every 3.5s matching title pulse
+      soundFx.startAmbientTheme();      // Starts continuous background sci-fi theme pad
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+    };
+
+    // Browsers require a user interaction to unlock audio context smoothly
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('keydown', handleFirstInteraction);
+
+    return () => {
+      soundFx.stopHeartbeatLoop();
+      soundFx.stopAmbientTheme();
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+    };
   }, []);
 
   return (
     <section className="relative h-screen min-h-[700px] w-full overflow-hidden flex items-center justify-center">
-      {/* Grid background — faint red */}
+      {/* Grid background */}
       <div className="absolute inset-0 grid-pattern radial-fade" />
 
-      {/* Radial glows — red and gold */}
+      {/* Radial glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-red-600/8 blur-[120px]" />
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-amber-500/5 blur-[100px]" />
 
@@ -30,28 +43,16 @@ export default function Hero({ onAssemble }: HeroProps) {
         <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/50 to-transparent scan-line" />
       </div>
 
-      {/* Corner HUD brackets with + markers */}
+      {/* Corner HUD brackets */}
       <div className="absolute top-5 left-5 w-14 h-14 border-l border-t border-red-500/25" />
       <Plus className="absolute top-4 left-4 w-3 h-3 text-red-500/40" />
       <div className="absolute top-5 right-5 w-14 h-14 border-r border-t border-red-500/25" />
       <Plus className="absolute top-4 right-4 w-3 h-3 text-red-500/40" />
-      <div className="absolute bottom-5 left-5 w-14 h-14 border-l border-b border-amber-500/25" />
-      <Plus className="absolute bottom-4 left-4 w-3 h-3 text-amber-500/40" />
-      <div className="absolute bottom-5 right-5 w-14 h-14 border-r border-b border-amber-500/25" />
-      <Plus className="absolute bottom-4 right-4 w-3 h-3 text-amber-500/40" />
 
       {/* Top status bar */}
       <div className="absolute top-7 left-1/2 -translate-x-1/2 flex items-center gap-3 tactical-xs text-red-400/70">
         <span className="w-1.5 h-1.5 rounded-full bg-red-500 arc-pulse" />
-        [ SYS: STARK-IND-LINK // SECURE ]
-      </div>
-
-      {/* Side coordinate labels */}
-      <div className="absolute top-1/2 left-5 -translate-y-1/2 -rotate-90 tactical-xs text-zinc-600 hidden sm:block">
-        28.4744° N / 77.4834° E
-      </div>
-      <div className="absolute top-1/2 right-5 -translate-y-1/2 rotate-90 tactical-xs text-zinc-600 hidden sm:block">
-        SECTOR 7G // OP: SUMMIT
+        [ SYS: STARK-IND-AUDIO LINK // ACTIVE ] <Volume2 className="w-3 h-3 text-red-400 animate-pulse" />
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-4xl">
@@ -61,20 +62,14 @@ export default function Hero({ onAssemble }: HeroProps) {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col items-center gap-5"
         >
-          {/* Marvel-style red rectangular badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 10, scaleX: 0.8 }}
-            animate={{ opacity: 1, y: 0, scaleX: 1 }}
-            transition={{ delay: 0.15, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-1"
-          >
-            <div className="bg-[#ED1D24] px-5 py-1.5 shadow-[0_0_25px_rgba(237,29,36,0.4)] relative">
-              <span className="font-display text-base sm:text-lg tracking-[0.15em] text-white leading-none">
-                MARVEL <span className="text-zinc-300 font-cond text-sm">×</span> GFG
-              </span>
-            </div>
-          </motion.div>
+          {/* Badge */}
+          <div className="bg-[#ED1D24] px-5 py-1.5 shadow-[0_0_25px_rgba(237,29,36,0.4)] relative mb-1">
+            <span className="font-display text-base sm:text-lg tracking-[0.15em] text-white leading-none">
+              MARVEL <span className="text-zinc-300 font-cond text-sm">×</span> GFG
+            </span>
+          </div>
 
+          {/* Title with synchronized pulsing animation */}
           <motion.h1
             className="font-display text-6xl sm:text-8xl md:text-9xl tracking-wide leading-[0.85] text-transparent bg-clip-text bg-gradient-to-r from-[#ED1D24] to-[#F8E825]"
             animate={{
@@ -88,10 +83,9 @@ export default function Hero({ onAssemble }: HeroProps) {
               ]
             }}
             transition={{
-              duration: 2.5,
+              duration: 3.5, // Perfectly matched to the 3.5s heartbeat interval loop
               ease: "linear",
               repeat: Infinity,
-              repeatDelay: 1
             }}
           >
             STARK DEVELOPER
