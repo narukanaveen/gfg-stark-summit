@@ -165,28 +165,28 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
           className={`absolute inset-0 rounded-sm bg-gradient-to-b ${a.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10`}
         />
 
-        {/* CHARACTER POP-OUT HERO (Fixed Centering & Sizing) */}
+        {/* CHARACTER POP-OUT HERO (Contained by default, pops on hover) */}
         <div
-          className="absolute -top-20 md:-top-28 left-1/2 w-[120%] md:w-[140%] h-72 md:h-96 pointer-events-none z-30 flex items-end justify-center"
+          className="absolute top-2 left-0 w-full h-[260px] sm:h-[280px] pointer-events-none z-30 flex items-end justify-center px-4"
           style={{
-            transform: 'translateX(-50%) translateZ(40px)',
+            transform: 'translateZ(40px)',
           }}
         >
           <motion.img
             src={track.image}
             alt={track.hero}
             animate={{
-              y: isHovered ? -15 : 0,
-              scale: isHovered ? 1.08 : 1,
+              y: isHovered ? -35 : 10,
+              scale: isHovered ? 1.15 : 0.85,
             }}
             transition={{
               type: 'spring',
-              stiffness: 260,
+              stiffness: 300,
               damping: 20,
             }}
-            className="w-full h-full object-contain object-bottom"
+            className="w-full h-full object-contain object-bottom origin-bottom"
             style={{
-              filter: `drop-shadow(0 20px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 28px ${track.auraColor})`,
+              filter: `drop-shadow(0 15px 25px rgba(0,0,0,0.7)) drop-shadow(0 0 20px ${track.auraColor})`,
             }}
           />
         </div>
