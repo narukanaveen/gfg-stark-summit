@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState, useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { Target, MapPin, Clock, Trophy, Cpu, Plus } from 'lucide-react';
 import { soundFx } from '../audio';
 
@@ -9,8 +9,12 @@ interface MissionLogProps {
 
 const TARGET_DATE = new Date('2026-10-15T09:00:00').getTime();
 
-function useCountdown() {
+export default function MissionLog({ onAssemble }: MissionLogProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  
+  // Reference for the countdown card to check if it's visible on screen
+  const countdownRef = useRef<HTMLDivElement>(null);
+  const isCountdownInView = useInView(countdownRef, { margin: '-50px' });
 
   useEffect(() => {
     const tick = () => {
@@ -21,36 +25,36 @@ function useCountdown() {
         minutes: Math.floor((diff % 3600000) / 60000),
         seconds: Math.floor((diff % 60000) / 1000),
       });
-      // Play digital clock tick sound every second
-      soundFx.playTick();
+
+      // Only play the digital clock tick sound if the countdown card is currently visible on screen
+      if (isCountdownInView) {
+        soundFx.playTick();
+      }
     };
+    
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [isCountdownInView]);
 
-  return time;
-}
+  const bootUp3D = {
+    hidden: { opacity: 0, y: 60, rotateX: -20, scale: 0.95 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      scale: 1,
+      transition: { 
+        delay: i * 0.12, 
+        duration: 0.8, 
+        type: 'spring', 
+        stiffness: 120, 
+        damping: 20 
+      },
+    }),
+  };
 
-const bootUp3D = {
-  hidden: { opacity: 0, y: 60, rotateX: -20, scale: 0.95 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    rotateX: 0,
-    scale: 1,
-    transition: { 
-      delay: i * 0.12, 
-      duration: 0.8, 
-      type: 'spring', 
-      stiffness: 120, 
-      damping: 20 
-    },
-  }),
-};
-
-function CornerMarks() {
-  return (
+  const CornerMarks = () => (
     <>
       <Plus className="absolute top-2 left-2 w-3 h-3 text-white/15 z-20" />
       <Plus className="absolute top-2 right-2 w-3 h-3 text-white/15 z-20" />
@@ -58,51 +62,48 @@ function CornerMarks() {
       <Plus className="absolute bottom-2 right-2 w-3 h-3 text-white/15 z-20" />
     </>
   );
-}
 
-function BentoCard({ children, className, glowColor, custom }: { children: React.ReactNode, className: string, glowColor: string, custom: number }) {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
+  const BentoCard = ({ children, className, glowColor, custom, cardRef }: { children: React.ReactNode, className: string, glowColor: string, custom: number, cardRef?: React.RefObject<HTMLDivElement | null> }) => {
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const [isHovered, setIsHovered] = useState(false);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMousePosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  };
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      setMousePosition({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    };
 
-  return (
-    <motion.div
-      variants={bootUp3D}
-      custom={custom}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-80px' }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => {
-        setIsHovered(true);
-        soundFx.playHover();
-      }}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`group relative overflow-hidden bg-[#0a0b0e] rounded-sm transition-all duration-300 ease-out cursor-pointer ${className}`}
-    >
-      <div
-        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
-        style={{
-          opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(500px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}, transparent 40%)`,
+    return (
+      <motion.div
+        ref={cardRef}
+        variants={bootUp3D}
+        custom={custom}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-80px' }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => {
+          setIsHovered(true);
+          soundFx.playHover();
         }}
-      />
-      <div className="relative z-10 h-full flex flex-col">
-        {children}
-      </div>
-    </motion.div>
-  );
-}
-
-export default function MissionLog({ onAssemble }: MissionLogProps) {
-  const t = useCountdown();
+        onMouseLeave={() => setIsHovered(false)}
+        className={`group relative overflow-hidden bg-[#0a0b0e] rounded-sm transition-all duration-300 ease-out cursor-pointer ${className}`}
+      >
+        <div
+          className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
+          style={{
+            opacity: isHovered ? 1 : 0,
+            background: `radial-gradient(500px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}, transparent 40%)`,
+          }}
+        />
+        <div className="relative z-10 h-full flex flex-col">
+          {children}
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <section className="relative py-24 sm:py-32 px-4 sm:px-6">
@@ -185,10 +186,11 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
           </div>
         </BentoCard>
 
-        {/* CARD 2: COUNTDOWN TIMER */}
+        {/* CARD 2: COUNTDOWN TIMER (Attached with countdownRef) */}
         <BentoCard 
           custom={1}
           glowColor="rgba(16, 185, 129, 0.08)"
+          cardRef={countdownRef}
           className="md:row-span-2 border border-emerald-500/20 hover:border-emerald-500/45 hover:shadow-[0_0_30px_rgba(16,185,129,0.12)] p-6 justify-between"
         >
           <CornerMarks />
@@ -203,10 +205,10 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
             <p className="tactical-xs text-zinc-600 mb-4">COUNTDOWN TO LAUNCH</p>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: 'DAYS', value: t.days },
-                { label: 'HRS', value: t.hours },
-                { label: 'MIN', value: t.minutes },
-                { label: 'SEC', value: t.seconds },
+                { label: 'DAYS', value: time.days },
+                { label: 'HRS', value: time.hours },
+                { label: 'MIN', value: time.minutes },
+                { label: 'SEC', value: time.seconds },
               ].map((unit, i) => (
                 <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center group-hover:border-emerald-500/30 transition-colors">
                   <motion.div 
