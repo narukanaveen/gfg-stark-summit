@@ -32,7 +32,7 @@ class SoundEffects {
         osc.frequency.setValueAtTime(70 - index * 15, now + delay);
         osc.frequency.exponentialRampToValueAtTime(20, now + delay + 0.3);
 
-        gain.gain.setValueAtTime(0.25, now + delay); // Stronger bass punch
+        gain.gain.setValueAtTime(0.25, now + delay);
         gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.35);
 
         osc.connect(gain);
@@ -62,7 +62,7 @@ class SoundEffects {
     }
   }
 
-  // Continuous Cinematic Sci-Fi Ambient Theme (Generative low drone pad)
+  // Continuous Cinematic Sci-Fi Ambient Theme
   startAmbientTheme() {
     if (this.isAmbientPlaying) return;
     this.init();
@@ -177,6 +177,55 @@ class SoundEffects {
         osc.start(now + index * 0.07);
         osc.stop(now + index * 0.07 + 0.18);
       });
+    } catch {}
+  }
+
+  // Crisp digital clock tick for countdown timers
+  playTick() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.015);
+
+      gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.015);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.015);
+    } catch {}
+  }
+
+  // Directive / Track selection lock-in sound
+  playDirectiveSelect() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+
+      gain.gain.setValueAtTime(0.03, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.08);
     } catch {}
   }
 }

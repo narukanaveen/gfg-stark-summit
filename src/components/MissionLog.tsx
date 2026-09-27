@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { motion, useAnimation, useInView } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Target, MapPin, Clock, Trophy, Cpu, Plus } from 'lucide-react';
+import { soundFx } from '../audio';
 
 interface MissionLogProps {
   onAssemble: () => void;
@@ -20,6 +21,8 @@ function useCountdown() {
         minutes: Math.floor((diff % 3600000) / 60000),
         seconds: Math.floor((diff % 60000) / 1000),
       });
+      // Play digital clock tick sound every second
+      soundFx.playTick();
     };
     tick();
     const id = setInterval(tick, 1000);
@@ -29,9 +32,6 @@ function useCountdown() {
   return time;
 }
 
-/* =========================================================================
-   3D BOOT PHYSICS
-   ========================================================================= */
 const bootUp3D = {
   hidden: { opacity: 0, y: 60, rotateX: -20, scale: 0.95 },
   visible: (i: number) => ({
@@ -60,9 +60,6 @@ function CornerMarks() {
   );
 }
 
-/* =========================================================================
-   JARVIS SPOTLIGHT WRAPPER (Tracks mouse cursor with radial glow)
-   ========================================================================= */
 function BentoCard({ children, className, glowColor, custom }: { children: React.ReactNode, className: string, glowColor: string, custom: number }) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -83,11 +80,13 @@ function BentoCard({ children, className, glowColor, custom }: { children: React
       whileInView="visible"
       viewport={{ once: true, margin: '-80px' }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        soundFx.playHover();
+      }}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group relative overflow-hidden bg-[#0a0b0e] rounded-sm transition-all duration-300 ease-out ${className}`}
+      className={`group relative overflow-hidden bg-[#0a0b0e] rounded-sm transition-all duration-300 ease-out cursor-pointer ${className}`}
     >
-      {/* Dynamic Cursor Spotlight */}
       <div
         className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
         style={{
@@ -95,7 +94,6 @@ function BentoCard({ children, className, glowColor, custom }: { children: React
           background: `radial-gradient(500px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}, transparent 40%)`,
         }}
       />
-      {/* Content strictly held above the spotlight */}
       <div className="relative z-10 h-full flex flex-col">
         {children}
       </div>
@@ -132,13 +130,13 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         </motion.h2>
       </div>
 
-      {/* Bento grid — 3D Perspective Enabled */}
+      {/* Bento grid */}
       <div 
         className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-[minmax(180px,auto)]"
         style={{ perspective: '1200px' }}
       >
         
-        {/* ==================== CARD 1: PRIMARY DIRECTIVE ==================== */}
+        {/* CARD 1: PRIMARY DIRECTIVE */}
         <BentoCard 
           custom={0} 
           glowColor="rgba(237, 29, 36, 0.08)"
@@ -146,7 +144,6 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         >
           <CornerMarks />
           
-          {/* Scanning Laser Line */}
           <motion.div 
             animate={{ top: ['-10%', '110%'] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
@@ -173,7 +170,14 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
             </p>
             <div className="flex flex-wrap gap-1.5 mt-5">
               {['24 HRS', 'TEAM OF 4', '3 TRACKS', '₹50K POOL'].map((tag) => (
-                <span key={tag} className="px-2.5 py-1 tactical-xs bg-black/40 border border-white/8 text-zinc-400 rounded-sm group-hover:border-red-500/30 group-hover:text-red-100 transition-colors">
+                <span 
+                  key={tag} 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    soundFx.playDirectiveSelect();
+                  }}
+                  className="px-2.5 py-1 tactical-xs bg-black/40 border border-white/8 text-zinc-400 rounded-sm group-hover:border-red-500/30 group-hover:text-red-100 transition-colors"
+                >
                   {tag}
                 </span>
               ))}
@@ -181,7 +185,7 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
           </div>
         </BentoCard>
 
-        {/* ==================== CARD 2: COUNTDOWN TIMER ==================== */}
+        {/* CARD 2: COUNTDOWN TIMER */}
         <BentoCard 
           custom={1}
           glowColor="rgba(16, 185, 129, 0.08)"
@@ -205,7 +209,6 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
                 { label: 'SEC', value: t.seconds },
               ].map((unit, i) => (
                 <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center group-hover:border-emerald-500/30 transition-colors">
-                  {/* Glitching Numbers */}
                   <motion.div 
                     animate={{ 
                       opacity: [1, 1, 0.4, 1, 0.8, 1, 1],
@@ -215,7 +218,7 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
                       duration: 4, 
                       repeat: Infinity, 
                       times: [0, 0.9, 0.92, 0.94, 0.96, 0.98, 1],
-                      delay: i * 0.2 // Stagger glitches
+                      delay: i * 0.2 
                     }}
                     className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums"
                   >
@@ -233,7 +236,7 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
           </div>
         </BentoCard>
 
-        {/* ==================== CARD 3: LOCATION ==================== */}
+        {/* CARD 3: LOCATION */}
         <BentoCard 
           custom={2}
           glowColor="rgba(237, 29, 36, 0.08)"
@@ -255,7 +258,7 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
           </div>
         </BentoCard>
 
-        {/* ==================== CARD 4: REWARDS ==================== */}
+        {/* CARD 4: REWARDS */}
         <BentoCard 
           custom={3}
           glowColor="rgba(248, 232, 37, 0.08)"
@@ -272,14 +275,18 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
           <h3 className="font-display text-2xl tracking-wide leading-none group-hover:text-amber-100 transition-colors">₹50,000 POOL</h3>
           <p className="font-cond font-light text-zinc-500 text-sm mt-1 mb-3">Plus intern referrals & Stark-tier swag.</p>
           <button
-            onClick={onAssemble}
-            className="self-start mt-auto tactical-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1 group/btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              soundFx.playActivate();
+              onAssemble();
+            }}
+            className="self-start mt-auto tactical-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1 group/btn cursor-pointer"
           >
             VIEW ALL REWARDS <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} className="inline-block">→</motion.span>
           </button>
         </BentoCard>
 
-        {/* ==================== CARD 5: TECH STACK ==================== */}
+        {/* CARD 5: TECH STACK */}
         <BentoCard 
           custom={4}
           glowColor="rgba(255, 255, 255, 0.05)"
@@ -295,7 +302,14 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
           </div>
           <div className="flex flex-wrap gap-1.5">
             {['REACT', 'SOLIDITY', 'PYTORCH', 'FLUTTER'].map((tech) => (
-              <span key={tech} className="px-2.5 py-1 tactical-xs bg-black/40 border border-white/8 text-zinc-500 rounded-sm group-hover:border-white/20 group-hover:text-zinc-300 transition-colors">
+              <span 
+                key={tech} 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  soundFx.playDirectiveSelect();
+                }}
+                className="px-2.5 py-1 tactical-xs bg-black/40 border border-white/8 text-zinc-500 rounded-sm group-hover:border-white/20 group-hover:text-zinc-300 transition-colors"
+              >
                 {tech}
               </span>
             ))}
