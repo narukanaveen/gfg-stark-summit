@@ -9,12 +9,11 @@ interface MissionLogProps {
 
 const TARGET_DATE = new Date('2026-10-15T09:00:00').getTime();
 
-// Isolated Countdown Component with glitch effect & live viewport audio scoping
+// Isolated Countdown Component with ultra-fast recurring glitch effect
 function CountdownCard() {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
   
-  // Notice NO 'once: true' here so it accurately turns false when you scroll away from this section
   const isInView = useInView(cardRef, { margin: '-50px' });
 
   useEffect(() => {
@@ -27,7 +26,6 @@ function CountdownCard() {
         seconds: Math.floor((diff % 60000) / 1000),
       });
 
-      // Sound ONLY plays when this specific card is currently on your screen
       if (isInView) {
         soundFx.playTick();
       }
@@ -55,17 +53,23 @@ function CountdownCard() {
             { label: 'SEC', value: time.seconds },
           ].map((unit, i) => (
             <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center group-hover:border-emerald-500/30 transition-colors">
-              {/* Restored Glitching Numbers Effect */}
+              {/* Ultra-fast recurring glitch effect */}
               <motion.div 
                 animate={{ 
-                  opacity: [1, 1, 0.4, 1, 0.8, 1, 1],
-                  x: [0, 0, -2, 2, 0, 0, 0]
+                  opacity: [1, 0.2, 1, 0.5, 1, 0.3, 1],
+                  x: [0, -3, 3, -2, 2, 0, 0],
+                  filter: [
+                    "drop-shadow(0 0 0px rgba(16,185,129,0))",
+                    "drop-shadow(2px 0 8px rgba(16,185,129,0.8))",
+                    "drop-shadow(-2px 0 8px rgba(237,29,36,0.8))",
+                    "drop-shadow(0 0 0px rgba(16,185,129,0))"
+                  ]
                 }}
                 transition={{ 
-                  duration: 4, 
+                  duration: 1.2, 
                   repeat: Infinity, 
-                  times: [0, 0.9, 0.92, 0.94, 0.96, 0.98, 1],
-                  delay: i * 0.2 
+                  repeatDelay: 0.5,
+                  delay: i * 0.15 
                 }}
                 className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums"
               >
