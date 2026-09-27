@@ -14,6 +14,7 @@ function CountdownCard() {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
   
+  // Audio will ONLY play when this card is in the viewport
   const isInView = useInView(cardRef, { margin: '-50px' });
 
   useEffect(() => {
@@ -26,6 +27,7 @@ function CountdownCard() {
         seconds: Math.floor((diff % 60000) / 1000),
       });
 
+      // Sound triggers only if the user is looking at the countdown
       if (isInView) {
         soundFx.playTick();
       }
@@ -40,20 +42,20 @@ function CountdownCard() {
     <div ref={cardRef} className="h-full flex flex-col justify-between">
       <div className="flex items-center gap-2.5 relative">
         <Clock className="w-4 h-4 text-emerald-400 group-hover:-rotate-12 transition-transform" />
-        <span className="tactical-xs text-emerald-400/70">T-MINUS</span>
+        <span className="tactical-xs text-emerald-400/80 tracking-widest">T-MINUS</span>
       </div>
 
       <div className="relative mt-4 flex-1 flex flex-col justify-center">
-        <p className="tactical-xs text-zinc-600 mb-4">COUNTDOWN TO LAUNCH</p>
-        <div className="grid grid-cols-2 gap-2">
+        <p className="tactical-xs text-zinc-400 mb-4 tracking-widest">COUNTDOWN TO LAUNCH</p>
+        <div className="grid grid-cols-2 gap-3">
           {[
             { label: 'DAYS', value: time.days },
             { label: 'HRS', value: time.hours },
             { label: 'MIN', value: time.minutes },
             { label: 'SEC', value: time.seconds },
           ].map((unit, i) => (
-            <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center group-hover:border-emerald-500/30 transition-colors">
-              {/* Ultra-fast recurring glitch effect */}
+            <div key={unit.label} className="rounded-md bg-black/60 border border-emerald-500/20 p-4 text-center group-hover:border-emerald-500/40 transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)_inset]">
+              {/* Restored: Ultra-fast recurring glitch effect */}
               <motion.div 
                 animate={{ 
                   opacity: [1, 0.2, 1, 0.5, 1, 0.3, 1],
@@ -71,17 +73,17 @@ function CountdownCard() {
                   repeatDelay: 0.5,
                   delay: i * 0.15 
                 }}
-                className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums"
+                className="text-4xl font-mono font-bold text-emerald-400 text-glow-emerald tabular-nums tracking-tight"
               >
                 {String(unit.value).padStart(2, '0')}
               </motion.div>
-              <div className="tactical-xs text-zinc-600 mt-1">{unit.label}</div>
+              <div className="tactical-xs text-zinc-500 mt-2 tracking-widest">{unit.label}</div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="relative mt-4 flex items-center gap-2 tactical-xs text-emerald-400/60">
+      <div className="relative mt-5 flex items-center gap-2 tactical-xs text-emerald-400/80 tracking-widest">
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 arc-pulse" />
         [ STATUS: ARMED ]
       </div>
@@ -106,10 +108,10 @@ const bootUp3D = {
 function CornerMarks() {
   return (
     <>
-      <Plus className="absolute top-2 left-2 w-3 h-3 text-white/15 z-20" />
-      <Plus className="absolute top-2 right-2 w-3 h-3 text-white/15 z-20" />
-      <Plus className="absolute bottom-2 left-2 w-3 h-3 text-white/15 z-20" />
-      <Plus className="absolute bottom-2 right-2 w-3 h-3 text-white/15 z-20" />
+      <Plus className="absolute top-2 left-2 w-3 h-3 text-white/20 z-20" />
+      <Plus className="absolute top-2 right-2 w-3 h-3 text-white/20 z-20" />
+      <Plus className="absolute bottom-2 left-2 w-3 h-3 text-white/20 z-20" />
+      <Plus className="absolute bottom-2 right-2 w-3 h-3 text-white/20 z-20" />
     </>
   );
 }
@@ -139,13 +141,13 @@ function BentoCard({ children, className, glowColor, custom }: { children: React
         soundFx.playHover();
       }}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group relative overflow-hidden bg-[#0a0b0e] rounded-sm transition-all duration-300 ease-out cursor-pointer ${className}`}
+      className={`group relative overflow-hidden bg-[#07080a] border border-white/[0.08] rounded-md transition-all duration-300 ease-out cursor-pointer ${className}`}
     >
       <div
         className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
         style={{
           opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(500px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}, transparent 40%)`,
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}, transparent 40%)`,
         }}
       />
       <div className="relative z-10 h-full flex flex-col">
@@ -169,14 +171,14 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
           className="flex items-center gap-3 mb-4"
         >
           <div className="h-px w-12 bg-gradient-to-r from-red-500 to-transparent" />
-          <span className="tactical-sm text-red-400">02 — MISSION LOG</span>
+          <span className="tactical-sm text-red-400 tracking-widest">02 — MISSION LOG</span>
         </motion.div>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-display text-4xl sm:text-6xl tracking-wide leading-none"
+          className="font-display text-4xl sm:text-6xl tracking-wide leading-none text-white"
         >
           THE DIRECTIVE
         </motion.h2>
@@ -184,54 +186,55 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
 
       {/* Bento grid */}
       <div 
-        className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-[minmax(180px,auto)]"
+        className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[minmax(200px,auto)]"
         style={{ perspective: '1200px' }}
       >
         
         {/* CARD 1: PRIMARY DIRECTIVE */}
         <BentoCard 
           custom={0} 
-          glowColor="rgba(237, 29, 36, 0.08)"
-          className="md:col-span-2 border border-red-500/20 hover:border-red-500/50 hover:shadow-[0_0_30px_rgba(237,29,36,0.12)] p-8 justify-end"
+          glowColor="rgba(237, 29, 36, 0.05)"
+          className="md:col-span-2 hover:border-red-500/40 hover:shadow-[0_0_30px_rgba(237,29,36,0.1)] p-8 justify-end"
         >
           <CornerMarks />
           
           <motion.div 
             animate={{ top: ['-10%', '110%'] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-            className="absolute left-0 right-0 h-[1px] bg-red-500/30 shadow-[0_0_15px_rgba(237,29,36,0.8)] z-0"
+            transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+            className="absolute left-0 right-0 h-[1px] bg-red-500/15 shadow-[0_0_10px_rgba(237,29,36,0.5)] z-0 pointer-events-none"
           />
 
-          <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-red-600/10 blur-3xl group-hover:bg-red-600/20 transition-colors duration-300" />
+          <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-red-600/5 blur-3xl group-hover:bg-red-600/10 transition-colors duration-500 pointer-events-none" />
           
-          <div className="flex items-start justify-between relative mb-6">
+          <div className="flex items-start justify-between relative mb-8">
             <div className="flex items-center gap-2.5">
               <Target className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform" />
-              <span className="tactical-xs text-red-400/70">DIRECTIVE 01 // PRIMARY</span>
+              <span className="tactical-xs text-red-400/80 tracking-widest">DIRECTIVE 01 // PRIMARY</span>
             </div>
-            <span className="tactical-xs text-zinc-600">REF: SD-2026-001</span>
+            <span className="tactical-xs text-zinc-500 tracking-widest">REF: SD-2026-001</span>
           </div>
           
           <div className="relative">
-            <h3 className="font-display text-3xl sm:text-4xl tracking-wide mb-3 leading-none group-hover:text-white transition-colors">
+            <h3 className="font-display text-3xl sm:text-5xl tracking-wide mb-4 leading-none text-zinc-100 group-hover:text-white transition-colors">
               THE HACKATHON DIRECTIVE
             </h3>
-            <p className="font-cond font-light text-zinc-400 leading-relaxed text-sm sm:text-base max-w-lg">
+            <p className="font-cond font-light text-zinc-400 leading-relaxed text-sm sm:text-base max-w-lg mb-6">
               Assemble a team of up to 4 developers. You have 24 hours to build a solution
               across Web3, AI, or App Development. Deploy something worthy of Stark Industries.
             </p>
-            <div className="flex flex-wrap gap-1.5 mt-5">
+            <div className="flex flex-wrap gap-2 mt-5">
               {['24 HRS', 'TEAM OF 4', '3 TRACKS', '₹50K POOL'].map((tag) => (
-                <span 
+                <motion.span 
                   key={tag} 
-                  onClick={(e) => {
+                  whileHover={{ scale: 1.05 }}
+                  onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     soundFx.playDirectiveSelect();
                   }}
-                  className="px-2.5 py-1 tactical-xs bg-black/40 border border-white/8 text-zinc-400 rounded-sm group-hover:border-red-500/30 group-hover:text-red-100 transition-colors"
+                  className="px-3 py-1.5 tactical-xs tracking-widest bg-black/60 border border-white/10 text-zinc-300 rounded-sm hover:border-red-500/40 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
                 >
                   {tag}
-                </span>
+                </motion.span>
               ))}
             </div>
           </div>
@@ -240,59 +243,59 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         {/* CARD 2: COUNTDOWN TIMER */}
         <BentoCard 
           custom={1}
-          glowColor="rgba(16, 185, 129, 0.08)"
-          className="md:row-span-2 border border-emerald-500/20 hover:border-emerald-500/45 hover:shadow-[0_0_30px_rgba(16,185,129,0.12)] p-6 justify-between"
+          glowColor="rgba(16, 185, 129, 0.05)"
+          className="md:row-span-2 hover:border-emerald-500/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.1)] p-8 justify-between"
         >
           <CornerMarks />
-          <div className="absolute -bottom-20 -left-10 w-48 h-48 rounded-full bg-emerald-500/10 blur-3xl group-hover:bg-emerald-500/20 transition-colors" />
+          <div className="absolute -bottom-20 -left-10 w-48 h-48 rounded-full bg-emerald-500/5 blur-3xl group-hover:bg-emerald-500/10 transition-colors pointer-events-none" />
           <CountdownCard />
         </BentoCard>
 
         {/* CARD 3: LOCATION */}
         <BentoCard 
           custom={2}
-          glowColor="rgba(237, 29, 36, 0.08)"
-          className="border border-white/10 hover:border-red-500/45 hover:shadow-[0_0_30px_rgba(237,29,36,0.12)] p-6 justify-end"
+          glowColor="rgba(237, 29, 36, 0.05)"
+          className="hover:border-red-500/40 hover:shadow-[0_0_30px_rgba(237,29,36,0.1)] p-8 justify-end"
         >
           <CornerMarks />
-          <div className="flex items-center gap-2.5 mb-4">
+          <div className="flex items-center gap-2.5 mb-5">
             <MapPin className="w-4 h-4 text-red-400 group-hover:-translate-y-1 transition-transform" />
-            <span className="tactical-xs text-red-400/70">COORDINATES</span>
+            <span className="tactical-xs text-red-400/80 tracking-widest">COORDINATES</span>
           </div>
-          <h3 className="font-display text-2xl tracking-wide leading-none group-hover:text-white transition-colors">BENNETT UNIVERSITY</h3>
-          <p className="font-cond font-light text-zinc-500 text-sm mt-1">Greater Noida, UP — India</p>
-          <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+          <h3 className="font-display text-2xl sm:text-3xl tracking-wide leading-none text-zinc-100 group-hover:text-white transition-colors">BENNETT UNIVERSITY</h3>
+          <p className="font-cond font-light text-zinc-400 text-sm mt-2">Greater Noida, UP — India</p>
+          <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
             <div>
-              <div className="tactical-xs text-zinc-600">DATE</div>
-              <div className="font-mono text-xs text-zinc-300 mt-0.5 group-hover:text-red-200 transition-colors">OCT 15–16 / 2026</div>
+              <div className="tactical-xs text-zinc-500 tracking-widest">DATE</div>
+              <div className="font-mono text-xs text-zinc-300 mt-1 group-hover:text-red-300 transition-colors">OCT 15–16 / 2026</div>
             </div>
-            <span className="tactical-xs text-zinc-700">28.4744°N 77.4834°E</span>
+            <span className="tactical-xs text-zinc-600 tracking-widest">28.4744°N 77.4834°E</span>
           </div>
         </BentoCard>
 
         {/* CARD 4: REWARDS */}
         <BentoCard 
           custom={3}
-          glowColor="rgba(248, 232, 37, 0.08)"
-          className="border border-white/10 hover:border-amber-500/45 hover:shadow-[0_0_30px_rgba(248,232,37,0.1)] p-5 flex-col"
+          glowColor="rgba(248, 232, 37, 0.05)"
+          className="hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(248,232,37,0.1)] p-8 flex-col"
         >
           <CornerMarks />
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2.5">
               <Trophy className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
-              <span className="tactical-xs text-amber-400/70">REWARD</span>
+              <span className="tactical-xs text-amber-400/80 tracking-widest">REWARD</span>
             </div>
-            <span className="tactical-xs text-zinc-700">R-01</span>
+            <span className="tactical-xs text-zinc-600 tracking-widest">R-01</span>
           </div>
-          <h3 className="font-display text-2xl tracking-wide leading-none group-hover:text-amber-100 transition-colors">₹50,000 POOL</h3>
-          <p className="font-cond font-light text-zinc-500 text-sm mt-1 mb-3">Plus intern referrals & Stark-tier swag.</p>
+          <h3 className="font-display text-2xl sm:text-3xl tracking-wide leading-none text-zinc-100 group-hover:text-amber-300 transition-colors">₹50,000 POOL</h3>
+          <p className="font-cond font-light text-zinc-400 text-sm mt-2 mb-4">Plus intern referrals & Stark-tier swag.</p>
           <button
             onClick={(e) => {
               e.stopPropagation();
               soundFx.playActivate();
               onAssemble();
             }}
-            className="self-start mt-auto tactical-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1 group/btn cursor-pointer"
+            className="self-start mt-auto tactical-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1.5 group/btn cursor-pointer tracking-widest"
           >
             VIEW ALL REWARDS <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} className="inline-block">→</motion.span>
           </button>
@@ -301,29 +304,30 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         {/* CARD 5: TECH STACK */}
         <BentoCard 
           custom={4}
-          glowColor="rgba(255, 255, 255, 0.05)"
-          className="md:col-span-2 border border-white/10 hover:border-white/30 p-5 flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          glowColor="rgba(255, 255, 255, 0.03)"
+          className="md:col-span-2 hover:border-white/20 p-8 flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
         >
           <CornerMarks />
-          <div className="flex items-center gap-3">
-            <Cpu className="w-5 h-5 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+          <div className="flex items-center gap-4">
+            <Cpu className="w-6 h-6 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
             <div>
-              <h3 className="font-cond font-medium text-sm tracking-wide group-hover:text-white transition-colors">STARK-GRADE INFRASTRUCTURE</h3>
-              <p className="tactical-xs text-zinc-600 mt-0.5">GEEKSFORGEEKS × BENNETT TECH CHAPTER</p>
+              <h3 className="font-cond font-semibold text-base tracking-widest text-zinc-200 group-hover:text-white transition-colors">STARK-GRADE INFRASTRUCTURE</h3>
+              <p className="tactical-xs text-zinc-500 mt-1 tracking-widest">GEEKSFORGEEKS × BENNETT TECH CHAPTER</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {['REACT', 'SOLIDITY', 'PYTORCH', 'FLUTTER'].map((tech) => (
-              <span 
-                key={tech} 
-                onClick={(e) => {
+              <motion.span 
+                key={tech}
+                whileHover={{ scale: 1.05 }}
+                onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   soundFx.playDirectiveSelect();
                 }}
-                className="px-2.5 py-1 tactical-xs bg-black/40 border border-white/8 text-zinc-500 rounded-sm group-hover:border-white/20 group-hover:text-zinc-300 transition-colors"
+                className="px-3 py-1.5 tactical-xs tracking-widest bg-black/60 border border-white/10 text-zinc-400 rounded-sm hover:border-white/30 hover:text-white transition-colors cursor-pointer"
               >
                 {tech}
-              </span>
+              </motion.span>
             ))}
           </div>
         </BentoCard>
