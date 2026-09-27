@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX } from 'lucide-react';
 import Embers from '@/components/Embers';
 import Hero from '@/components/Hero';
@@ -90,12 +90,6 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const registrationRef = useRef<HTMLDivElement>(null);
 
-  const { scrollY } = useScroll();
-  // Slightly reduced the extreme parallax distances to prevent massive layer shifting lag
-  const topGlowParallax = useTransform(scrollY, [0, 3000], [0, 300]);
-  const bottomGlowParallax = useTransform(scrollY, [0, 3000], [0, -250]);
-  const embersParallax = useTransform(scrollY, [0, 3000], [0, 150]);
-
   const scrollToRegistration = () => {
     registrationRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -111,50 +105,40 @@ export default function App() {
 
       {!isBooted && <BootSequence onComplete={() => setIsBooted(true)} />}
 
-      {/* Added transform-gpu to main wrapper to force composite layer */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isBooted ? 1 : 0 }}
         transition={{ duration: 1.5, ease: 'easeInOut' }}
-        className="relative min-h-screen bg-[#0a0b0e] text-zinc-200 antialiased overflow-x-hidden transform-gpu"
+        className="relative min-h-screen bg-[#0a0b0e] text-zinc-200 antialiased overflow-x-hidden selection:bg-red-500/30"
       >
-        {/* Halftone Backdrop - Hardware Accelerated */}
-        <div
-          className="fixed inset-0 pointer-events-none z-[1] opacity-40 halftone-dots transform-gpu"
-          style={{
-            maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
-            WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
-          }}
-        />
-        
-        {/* Film grain - Removed `mix-blend-overlay` (Massive performance killer) */}
-        <div className="fixed inset-0 pointer-events-none z-[2] opacity-[0.04] film-grain transform-gpu" />
+        {/* HARDWARE ACCELERATED STATIC BACKGROUNDS (ZERO JS PARALLAX LAG) */}
+        <div className="fixed inset-0 pointer-events-none z-0">
+          
+          {/* Base Halftone Pattern - Removed heavy SVG mask */}
+          <div className="absolute inset-0 opacity-[0.25] halftone-dots" />
+          
+          {/* Radial overlay to fake the mask (Costs 0 CPU) */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b0e] via-transparent to-[#0a0b0e]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0b0e] via-transparent to-[#0a0b0e]" />
+          
+          {/* Film grain */}
+          <div className="absolute inset-0 opacity-[0.04] film-grain" />
 
-        {/* GPU-composited Parallax Radial Glows (REMOVED HEAVY CSS BLUR) */}
-        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          <motion.div
-            style={{ y: topGlowParallax }}
-            className="absolute top-[-100px] left-1/4 w-[800px] h-[800px] transform-gpu will-change-transform"
-            style={{
-              background: 'radial-gradient(circle at center, rgba(220,38,38,0.08) 0%, transparent 60%)'
-            }}
+          {/* Static Background Glows - Using Pure CSS Gradients instead of heavy blurs */}
+          <div 
+            className="absolute top-0 left-1/4 w-[800px] h-[800px] -translate-y-1/3"
+            style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.06) 0%, transparent 60%)' }}
           />
-          <motion.div
-            style={{ y: bottomGlowParallax }}
-            className="absolute bottom-[-100px] right-1/4 w-[800px] h-[800px] transform-gpu will-change-transform"
-            style={{
-              background: 'radial-gradient(circle at center, rgba(245,158,11,0.06) 0%, transparent 60%)'
-            }}
+          <div 
+            className="absolute bottom-0 right-1/4 w-[800px] h-[800px] translate-y-1/3"
+            style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.04) 0%, transparent 60%)' }}
           />
         </div>
 
-        {/* Parallax Embers */}
-        <motion.div
-          style={{ y: embersParallax }}
-          className="fixed inset-0 pointer-events-none z-0 transform-gpu will-change-transform"
-        >
+        {/* Embers locked to fixed position */}
+        <div className="fixed inset-0 pointer-events-none z-0">
           <Embers />
-        </motion.div>
+        </div>
 
         {/* Floating Master Audio HUD Toggle */}
         <div className="fixed bottom-5 right-5 z-50">
@@ -178,6 +162,7 @@ export default function App() {
           </button>
         </div>
 
+        {/* Main Content Payload */}
         <div className="relative z-10">
           <Hero onAssemble={scrollToRegistration} />
           <MissionLog onAssemble={scrollToRegistration} />
