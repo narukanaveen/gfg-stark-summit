@@ -12,9 +12,10 @@ const TARGET_DATE = new Date('2026-10-15T09:00:00').getTime();
 export default function MissionLog({ onAssemble }: MissionLogProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   
-  // Reference for the countdown card to check if it's visible on screen
+  // Reference for the countdown card
   const countdownRef = useRef<HTMLDivElement>(null);
-  const isCountdownInView = useInView(countdownRef, { margin: '-50px' });
+  const isCountdownInView = useInView(countdownRef, { once: true, margin: '-50px' });
+  const isSectionInView = useInView(countdownRef, { margin: '-50px' });
 
   useEffect(() => {
     const tick = () => {
@@ -26,8 +27,8 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         seconds: Math.floor((diff % 60000) / 1000),
       });
 
-      // Only play the digital clock tick sound if the countdown card is currently visible on screen
-      if (isCountdownInView) {
+      // Play tick sound only when the countdown is in view
+      if (isSectionInView) {
         soundFx.playTick();
       }
     };
@@ -35,21 +36,18 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [isCountdownInView]);
+  }, [isSectionInView]);
 
   const bootUp3D = {
-    hidden: { opacity: 0, y: 60, rotateX: -20, scale: 0.95 },
+    hidden: { opacity: 0, y: 40, scale: 0.98 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      rotateX: 0,
       scale: 1,
       transition: { 
-        delay: i * 0.12, 
-        duration: 0.8, 
-        type: 'spring', 
-        stiffness: 120, 
-        damping: 20 
+        delay: i * 0.08, 
+        duration: 0.6, 
+        ease: [0.16, 1, 0.3, 1]
       },
     }),
   };
@@ -82,7 +80,7 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         custom={custom}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: '-80px' }}
+        viewport={{ once: true, amount: 0.2 }}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => {
           setIsHovered(true);
@@ -113,7 +111,7 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="flex items-center gap-3 mb-4"
         >
@@ -123,7 +121,7 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="font-display text-4xl sm:text-6xl tracking-wide leading-none"
         >
@@ -186,7 +184,7 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
           </div>
         </BentoCard>
 
-        {/* CARD 2: COUNTDOWN TIMER (Attached with countdownRef) */}
+        {/* CARD 2: COUNTDOWN TIMER */}
         <BentoCard 
           custom={1}
           glowColor="rgba(16, 185, 129, 0.08)"
@@ -211,21 +209,9 @@ export default function MissionLog({ onAssemble }: MissionLogProps) {
                 { label: 'SEC', value: time.seconds },
               ].map((unit, i) => (
                 <div key={unit.label} className="rounded-sm bg-black/40 border border-emerald-500/12 p-3 text-center group-hover:border-emerald-500/30 transition-colors">
-                  <motion.div 
-                    animate={{ 
-                      opacity: [1, 1, 0.4, 1, 0.8, 1, 1],
-                      x: [0, 0, -2, 2, 0, 0, 0]
-                    }}
-                    transition={{ 
-                      duration: 4, 
-                      repeat: Infinity, 
-                      times: [0, 0.9, 0.92, 0.94, 0.96, 0.98, 1],
-                      delay: i * 0.2 
-                    }}
-                    className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums"
-                  >
+                  <div className="text-3xl font-mono font-bold text-emerald-300 text-glow-emerald tabular-nums">
                     {String(unit.value).padStart(2, '0')}
-                  </motion.div>
+                  </div>
                   <div className="tactical-xs text-zinc-600 mt-1">{unit.label}</div>
                 </div>
               ))}
