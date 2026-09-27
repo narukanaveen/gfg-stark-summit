@@ -33,11 +33,10 @@ const tracks: TrackCard[] = [
     tech: ['SOLIDITY', 'FOUNDRY', 'IPFS', 'REACT'],
     coord: 'TRACK-01 / 33.9°N',
     auraColor: 'rgba(237, 29, 36, 0.45)',
-    // Bigger native scale, pushed slightly down to stay in border, massive pop on hover
-    imgScale: 0.85,
+    imgScale: 0.80,
     imgHoverScale: 1.05,
-    imgY: 15,
-    imgHoverY: -30,
+    imgY: 20,
+    imgHoverY: -25,
   },
   {
     id: 'ai',
@@ -51,10 +50,11 @@ const tracks: TrackCard[] = [
     tech: ['PYTORCH', 'LANGCHAIN', 'HUGGINGFACE', 'RAG'],
     coord: 'TRACK-02 / 40.7°N',
     auraColor: 'rgba(248, 232, 37, 0.4)',
-    imgScale: 0.85,
-    imgHoverScale: 1.05,
-    imgY: 15,
-    imgHoverY: -30,
+    // Shrunk slightly to keep his taller head safely inside the box
+    imgScale: 0.74,
+    imgHoverScale: 0.98,
+    imgY: 20,
+    imgHoverY: -25,
   },
   {
     id: 'app',
@@ -68,10 +68,10 @@ const tracks: TrackCard[] = [
     tech: ['FLUTTER', 'KOTLIN', 'SWIFT', 'FIREBASE'],
     coord: 'TRACK-03 / 28.4°N',
     auraColor: 'rgba(16, 185, 129, 0.45)',
-    imgScale: 1.40,
-    imgHoverScale: 1.60,
-    imgY: 15,
-    imgHoverY: -30,
+    imgScale: 1.30,
+    imgHoverScale: 1.55,
+    imgY: 20,
+    imgHoverY: -25,
   },
 ];
 
@@ -169,13 +169,21 @@ function RosterCard({ track, index }: { track: TrackCard; index: number }) {
 
         <div className={`absolute inset-0 rounded-sm bg-gradient-to-b ${a.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10`} />
 
-        <div className="relative h-[260px] w-full flex items-end justify-center rounded-t-sm z-20" style={{ transform: 'translateZ(40px)' }}>
+        {/* =========================================================================
+            CLIP-PATH TRICK: Allows top overflow, strictly cuts off the bottom bleed
+           ========================================================================= */}
+        <div 
+          className="relative h-[260px] w-full flex items-end justify-center rounded-t-sm z-20" 
+          style={{ 
+            transform: 'translateZ(40px)',
+            clipPath: 'polygon(-50% -100%, 150% -100%, 150% 100%, -50% 100%)' 
+          }}
+        >
           <div className="absolute inset-0 grid-pattern-fine opacity-25 overflow-hidden rounded-t-sm" />
           
           <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 rounded-full border ${a.ring} arc-pulse`} />
           <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full ${a.blur} blur-2xl`} />
 
-          {/* DYNAMIC CHARACTER SCALING */}
           <motion.img
             src={track.image}
             alt={track.hero}
